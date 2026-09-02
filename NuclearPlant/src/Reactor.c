@@ -11,3 +11,7 @@ bool Reactor_Init(PReactor pReactor) {
 bool Reactor_Cleanup(PReactor pReactor) {
     return false;
 }
+
+bool Reactor_Update(PReactor pReactor) {
+    return false;
+}

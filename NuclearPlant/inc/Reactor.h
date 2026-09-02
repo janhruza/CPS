@@ -17,6 +17,17 @@ typedef struct tagReactor {
     unsigned int Id;
 
     /**
+     * Representing the reactor state - on/off.
+     */
+    unsigned int State;
+
+    /**
+     * Representing the reactor's uptime in simulation units.
+     * The uptime is incremented with each reactor update.
+     */
+    unsigned int Uptime;
+
+    /**
      * Representing the core temperature, in Celsius.
      */
     double Temperature;
@@ -35,5 +46,12 @@ bool Reactor_Init(PReactor pReactor);
  * @return Operation result.
  */
 bool Reactor_Cleanup(PReactor pReactor);
+
+/**
+ * Updates the reactor state.
+ * @param pReactor Pointer to a reactor object.
+ * @return Operation result.
+ */
+bool Reactor_Update(PReactor pReactor);
 
 #endif //NUCLEARPLANT_REACTOR_H
