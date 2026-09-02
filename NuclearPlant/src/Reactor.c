@@ -7,6 +7,7 @@
 bool Reactor_Init(PReactor pReactor) {
     return false;
 }
+
 bool Reactor_Cleanup(PReactor pReactor) {
     return false;
 }

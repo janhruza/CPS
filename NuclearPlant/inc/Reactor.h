@@ -7,12 +7,33 @@
 
 #include <stdbool.h>
 
+/**
+ * Representing a simple nuclear plant reactor.
+ */
 typedef struct tagReactor {
-    unsigned int Id;    // core id
-    double Temperature; // temp in C
+    /**
+     * Representing the reactor's identifier.
+     */
+    unsigned int Id;
+
+    /**
+     * Representing the core temperature, in Celsius.
+     */
+    double Temperature;
 } Reactor, *PReactor;
 
+/**
+ * Initializes the reactor object.
+ * @param pReactor Pointer to a reactor object.
+ * @return Operation result.
+ */
 bool Reactor_Init(PReactor pReactor);
+
+/**
+ * Cleans up the reactor object.
+ * @param pReactor Pointer to a reactor object.
+ * @return Operation result.
+ */
 bool Reactor_Cleanup(PReactor pReactor);
 
 #endif //NUCLEARPLANT_REACTOR_H

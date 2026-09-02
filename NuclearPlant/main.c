@@ -9,14 +9,22 @@
 
 #define ANSI_CLEAR     "\033[2J\033[H"
 
-typedef enum {
+/**
+ * Representing a custom enum solely for the HandleCommand method.
+ */
+typedef enum tagHCResult {
     HCOK,       // Command handled successfully.
     HCEMPTY,    // Command is empty.
     HCEXIT,     // Exit command received.
     HCERR,      // A generic error, command not found, etc.
-};
+} HCRESULT;
 
-static int HandleCommand(const char* command) {
+/**
+ * Handles a user entered input.
+ * @param command Normalized user input.
+ * @return Operation result.
+ */
+static HCRESULT HandleCommand(const char* command) {
     if (strlen(command) == 0) {
         return HCOK;
     }
@@ -35,6 +43,12 @@ static int HandleCommand(const char* command) {
     return HCERR;
 }
 
+/**
+ * Main application method.
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line arguments.
+ * @return Program's exit code.
+ */
 int main(int argc, const char* argv[]) {
 
     // command line args check
