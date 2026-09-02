@@ -1,0 +1,77 @@
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "inc/messages.h"
+
+#define COMMAND_LEN     255
+
+#define ANSI_CLEAR     "\033[2J\033[H"
+
+typedef enum {
+    HCOK,       // Command handled successfully.
+    HCEMPTY,    // Command is empty.
+    HCEXIT,     // Exit command received.
+    HCERR,      // A generic error, command not found, etc.
+};
+
+static int HandleCommand(const char* command) {
+    if (strlen(command) == 0) {
+        return HCOK;
+    }
+
+    if (strcmp(command, "exit") == 0) {
+        exit(EXIT_SUCCESS);
+        return HCEXIT;
+    }
+
+    else if (strcmp(command, "clear") == 0) {
+        printf(ANSI_CLEAR);
+        return HCOK;
+    }
+
+    // fallback case
+    return HCERR;
+}
+
+static int PrintHeader(void) {
+    printf("Nuclear Power Plant\n(c) 2026, Jan Hruza\n\n");
+    return 0;
+}
+
+int main(int argc, const char* argv[]) {
+
+    // command line args check
+    if (argc != 1) {
+        fprintf(stderr, MSG_ARGS_DISABLED);
+        return EXIT_FAILURE;
+    }
+
+    PrintHeader();
+
+    for (;;) {
+        printf(MSG_PROMPT);
+
+        // read the user input
+        char command[COMMAND_LEN] = {0};
+        fgets(command, COMMAND_LEN, stdin);
+        command[strcspn(command, "\n")] = 0;
+
+        // create a copy of the command
+        char commandCopy[COMMAND_LEN] = {0};
+        strcpy(commandCopy, command);
+
+        // normalize the string to all lowercase
+        for (int x = 0; x < strlen(commandCopy); x++) {
+            commandCopy[x] = (char)tolower(commandCopy[x]);
+        }
+
+        // run the command normalized command
+        if (HandleCommand(commandCopy) != HCOK) {
+            fprintf(stderr, MSG_COMMAND_NOT_FOUND);
+        }
+    }
+
+    return EXIT_SUCCESS;
+}
