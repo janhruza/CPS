@@ -35,11 +35,6 @@ static int HandleCommand(const char* command) {
     return HCERR;
 }
 
-static int PrintHeader(void) {
-    printf("Nuclear Power Plant\n(c) 2026, Jan Hruza\n\n");
-    return 0;
-}
-
 int main(int argc, const char* argv[]) {
 
     // command line args check
@@ -48,7 +43,7 @@ int main(int argc, const char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    PrintHeader();
+    printf(MSG_BANNER);
 
     for (;;) {
         printf(MSG_PROMPT);
