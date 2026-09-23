@@ -7,6 +7,13 @@
 
 #include <stdbool.h>
 
+typedef enum tagReactorState {
+    STATE_DOWN,
+    STATE_UP,
+    STATE_INIT,
+    STATE_CRITICAL
+} REACTOR_STATE;
+
 /**
  * Representing a simple nuclear plant reactor.
  */
@@ -53,5 +60,7 @@ bool Reactor_Cleanup(PReactor pReactor);
  * @return Operation result.
  */
 bool Reactor_Update(PReactor pReactor);
+
+bool Reactor_Create(PReactor pReactor, unsigned int coreId);
 
 #endif //NUCLEARPLANT_REACTOR_H

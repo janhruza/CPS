@@ -4,6 +4,8 @@
 #include <string.h>
 
 #include "inc/messages.h"
+#include "inc/Reactor.h"
+#include "inc/Version.h"
 
 #define COMMAND_LEN     255
 
@@ -39,6 +41,10 @@ static HCRESULT HandleCommand(const char* command) {
         return HCOK;
     }
 
+    else if (strcmp(command, "state") == 0) {
+        return HCOK;
+    }
+
     // fallback case
     return HCERR;
 }
@@ -49,7 +55,7 @@ static HCRESULT HandleCommand(const char* command) {
  * @param argv Array of command-line arguments.
  * @return Program's exit code.
  */
-int main(int argc, const char* argv[]) {
+int main(const int argc, const char* argv[]) {
 
     // command line args check
     if (argc != 1) {
@@ -57,7 +63,35 @@ int main(int argc, const char* argv[]) {
         return EXIT_FAILURE;
     }
 
+    Version version;
+    version.Major = 1;
+    version.Minor = 0;
+
+
     printf(MSG_BANNER);
+    printf(FMT_MSG_VERSION, version.Major, version.Minor);
+    puts("");
+
+    printf("Initializing 4 reactor cores\n");
+
+    const int total = 4;
+    Reactor cores[total];
+    int success = 0;
+    for (unsigned int x = 0; x < 4; x++) {
+        if (Reactor_Init(&cores[x]) == false) {
+            fprintf(stderr, MSG_REACTOR_INIT_FAILED);
+        }
+
+        else {
+            success++;
+            cores[x].Id = (unsigned int)x+1;
+            printf(FMT_MSG_REACTOR_INIT_OK, cores[x].Id);
+        }
+    }
+
+    printf("Initialized %d/%d reactor cores\n", success, total);
+
+    printf("\n");
 
     for (;;) {
         printf(MSG_PROMPT);
