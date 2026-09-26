@@ -10,6 +10,7 @@
 #define MSG_PROMPT                  "Command: "
 #define MSG_BANNER                  "Nuclear Power Plant\n(c) 2026, Jan Hruza\n"
 #define MSG_REACTOR_INIT_FAILED     "Reactor init failed.\n"
+#define MSG_REACTORS_INIT_FAILED    "Reactors init failed.\n"
 
 #define FMT_MSG_REACTOR_INIT_OK     "Reactor #%02d was initialized\n"
 #define FMT_MSG_VERSION             "Version %d.%d\n"

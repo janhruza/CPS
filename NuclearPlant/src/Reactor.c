@@ -5,6 +5,8 @@
 #include "../inc/Reactor.h"
 
 #include <stddef.h>
+#include <string.h>
+#include <time.h>
 
 bool Reactor_Init(const PReactor pReactor) {
     if (!pReactor) {
@@ -19,14 +21,18 @@ bool Reactor_Init(const PReactor pReactor) {
 }
 
 bool Reactor_Cleanup(PReactor pReactor) {
-    return false;
+    if (!pReactor) return false;
+    memset(pReactor, 0, sizeof(PReactor));
+    return true;
 }
 
 bool Reactor_Update(PReactor pReactor) {
-    return false;
+    if (!pReactor) return false;
+    pReactor->Uptime++;
+    return true;
 }
 
-bool Reactor_Create(const PReactor pReactor, unsigned int coreId) {
+bool Reactor_Create(const PReactor pReactor, const unsigned int coreId) {
     if (pReactor == NULL) {
         return false;
     }

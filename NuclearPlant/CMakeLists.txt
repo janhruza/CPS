@@ -8,4 +8,5 @@ add_executable(NuclearPlant main.c
         src/Reactor.c
         inc/messages.h
         inc/Version.h
+        src/Version.c
 )

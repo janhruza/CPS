@@ -49,6 +49,30 @@ static HCRESULT HandleCommand(const char* command) {
     return HCERR;
 }
 
+static bool InitializeCores(PReactor reactors, const int count) {
+    if (!reactors) {
+        fprintf(stderr, MSG_REACTORS_INIT_FAILED);
+        return false;
+    }
+
+    printf("Initializing %d reactor cores\n", count);
+    int success = 0;
+    for (unsigned int x = 0; x < count; x++) {
+        if (Reactor_Init(&reactors[x]) == false) {
+            fprintf(stderr, MSG_REACTOR_INIT_FAILED);
+        }
+
+        else {
+            success++;
+            reactors[x].Id = (unsigned int)x+1;
+            printf(FMT_MSG_REACTOR_INIT_OK, reactors[x].Id);
+        }
+    }
+
+    printf("Initialized %d/%d reactor cores\n", success, count);
+    return true;
+}
+
 /**
  * Main application method.
  * @param argc Number of command-line arguments.
@@ -63,33 +87,25 @@ int main(const int argc, const char* argv[]) {
         return EXIT_FAILURE;
     }
 
+    // establish the program version
     Version version;
-    version.Major = 1;
-    version.Minor = 0;
 
+    if (GetVersion(&version) != 0) {
+        version.Major = 1;
+        version.Minor = 0;
+        SetVersion(&version);
+    }
 
     printf(MSG_BANNER);
     printf(FMT_MSG_VERSION, version.Major, version.Minor);
     puts("");
 
-    printf("Initializing 4 reactor cores\n");
+    const int nCores = 8;
+    Reactor cores[nCores];
+    if (InitializeCores(cores, nCores) == false) {
 
-    const int total = 4;
-    Reactor cores[total];
-    int success = 0;
-    for (unsigned int x = 0; x < 4; x++) {
-        if (Reactor_Init(&cores[x]) == false) {
-            fprintf(stderr, MSG_REACTOR_INIT_FAILED);
-        }
-
-        else {
-            success++;
-            cores[x].Id = (unsigned int)x+1;
-            printf(FMT_MSG_REACTOR_INIT_OK, cores[x].Id);
-        }
+        return EXIT_FAILURE;
     }
-
-    printf("Initialized %d/%d reactor cores\n", success, total);
 
     printf("\n");
 

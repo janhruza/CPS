@@ -10,4 +10,7 @@ typedef struct tagVersion {
     int Minor;
 } Version;
 
+int SetVersion(Version *version);
+int GetVersion(Version *version);
+
 #endif //NUCLEARPLANT_VERSION_H
