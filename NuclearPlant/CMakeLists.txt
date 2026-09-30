@@ -9,4 +9,6 @@ add_executable(NuclearPlant main.c
         inc/messages.h
         inc/Version.h
         src/Version.c
+        inc/PowerPlant.h
+        src/PowerPlant.c
 )

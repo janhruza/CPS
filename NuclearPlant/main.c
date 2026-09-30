@@ -6,6 +6,7 @@
 #include "inc/messages.h"
 #include "inc/Reactor.h"
 #include "inc/Version.h"
+#include "inc/PowerPlant.h"
 
 #define COMMAND_LEN     255
 
@@ -20,6 +21,8 @@ typedef enum tagHCResult {
     HCEXIT,     // Exit command received.
     HCERR,      // A generic error, command not found, etc.
 } HCRESULT;
+
+PowerPlant *g_plant = NULL;
 
 /**
  * Handles a user entered input.
@@ -42,6 +45,13 @@ static HCRESULT HandleCommand(const char* command) {
     }
 
     else if (strcmp(command, "state") == 0) {
+        // lists states for all reactors
+        if (g_plant == NULL) return HCEMPTY;
+
+        for (int x = 0; x < g_plant->nReactors; x++) {
+            Reactor_PrintState(&g_plant->pReactors[x]);
+        }
+
         return HCOK;
     }
 
@@ -100,10 +110,14 @@ int main(const int argc, const char* argv[]) {
     printf(FMT_MSG_VERSION, version.Major, version.Minor);
     puts("");
 
-    const int nCores = 8;
-    Reactor cores[nCores];
-    if (InitializeCores(cores, nCores) == false) {
+    PowerPlant powerPlant = {0};
+    g_plant = &powerPlant;
 
+    powerPlant.nReactors = 8;
+    Reactor reactors[powerPlant.nReactors];
+    powerPlant.pReactors = reactors;
+
+    if (InitializeCores(powerPlant.pReactors, powerPlant.nReactors) == false) {
         return EXIT_FAILURE;
     }
 

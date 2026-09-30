@@ -38,6 +38,11 @@ typedef struct tagReactor {
      * Representing the core temperature, in Celsius.
      */
     double Temperature;
+
+    /**
+     * Representing the current reactor power.
+     */
+    unsigned int Power;
 } Reactor, *PReactor;
 
 /**
@@ -62,5 +67,7 @@ bool Reactor_Cleanup(PReactor pReactor);
 bool Reactor_Update(PReactor pReactor);
 
 bool Reactor_Create(PReactor pReactor, unsigned int coreId);
+
+bool Reactor_PrintState(PReactor pReactor);
 
 #endif //NUCLEARPLANT_REACTOR_H
