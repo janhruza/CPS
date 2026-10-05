@@ -11,4 +11,6 @@ add_executable(NuclearPlant main.c
         src/Version.c
         inc/PowerPlant.h
         src/PowerPlant.c
+        inc/commands.h
+        src/commands.c
 )

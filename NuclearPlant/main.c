@@ -4,13 +4,14 @@
 #include <string.h>
 
 #include "inc/messages.h"
+#include "inc/commands.h"
+
 #include "inc/Reactor.h"
 #include "inc/Version.h"
 #include "inc/PowerPlant.h"
+#include "inc/commands.h"
 
 #define COMMAND_LEN     255
-
-#define ANSI_CLEAR     "\033[2J\033[H"
 
 /**
  * Representing a custom enum solely for the HandleCommand method.
@@ -35,13 +36,15 @@ static HCRESULT HandleCommand(const char* command) {
     }
 
     if (strcmp(command, "exit") == 0) {
-        exit(EXIT_SUCCESS);
-        return HCEXIT;
+        return CmdQuit() == SUCCESS ? HCOK : HCERR;
+    }
+
+    else if (strcmp(command, "help") == 0) {
+        return CmdHelp() == SUCCESS ? HCOK : HCERR;
     }
 
     else if (strcmp(command, "clear") == 0) {
-        printf(ANSI_CLEAR);
-        return HCOK;
+        return CmdClear() == SUCCESS ? HCOK : HCERR;
     }
 
     else if (strcmp(command, "state") == 0) {
@@ -53,6 +56,10 @@ static HCRESULT HandleCommand(const char* command) {
         }
 
         return HCOK;
+    }
+
+    else if (strcmp(command, "version") == 0) {
+        return CmdVersion() == SUCCESS ? HCOK : HCERR;
     }
 
     // fallback case
