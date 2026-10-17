@@ -9,6 +9,8 @@ add_executable(Plutus main.c
         inc/Loan.h
         src/Loan.c
         inc/Transaction.h
-        src/Transaction.c)
+        src/Transaction.c
+        inc/Config.h
+        src/Config.c)
 
 target_link_libraries(Plutus m) # libm math library
