@@ -14,7 +14,7 @@ typedef enum {
 typedef struct {
     /* Inputs */
     long long llHomeValue;
-    int iCurrencyDigits;          /* ISO 4217 minor-unit exponent: 2 for CZK, USD, EUR; 0 for JPY */
+    int iCurrencyDigits;
     DownPaymentType eDownPayment;
     double dInterest;             /* annual rate, 0.0525 = 5.25% */
     int iTermYears;
@@ -30,4 +30,4 @@ typedef struct {
 bool MortgageValidate(const Mortgage *pMortgage);
 bool MortgageCalculate(Mortgage *pMortgage);
 
-#endif
+#endif //PLUTUS_MORTGAGE_H
