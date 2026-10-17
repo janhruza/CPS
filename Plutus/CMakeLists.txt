@@ -3,4 +3,8 @@ project(Plutus C)
 
 set(CMAKE_C_STANDARD 23)
 
-add_executable(Plutus main.c)
+add_executable(Plutus main.c
+        inc/Mortgage.h
+        src/Mortgage.c)
+
+target_link_libraries(Plutus m) # libm math library
