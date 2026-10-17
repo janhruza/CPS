@@ -5,15 +5,20 @@
 #ifndef PLUTUS_LOAN_H
 #define PLUTUS_LOAN_H
 
+#include <stdbool.h>
+
+/* Any loan: specify the inputs, then read the outputs. Whole currency units. */
 typedef struct tagLoan {
-    long long llPrincipal;     /* whole units */
-    int iCurrencyDigits;
-    double dRate;              /* annual, 0.0525 = 5.25% */
+    /* Inputs */
+    long long llPrincipal;     /* amount borrowed */
+    int iCurrencyDigits;       /* ISO 4217 minor-unit exponent: 2 for CZK, USD, EUR; 0 for JPY */
+    double dRate;              /* annual rate, 0.0525 = 5.25% */
     int iTermMonths;
 
-    /* outputs */
-    long long llPayment;
+    /* Outputs */
+    long long llPayment;       /* regular monthly payment */
     long long llTotalInterest;
+    long long llTotal;         /* llPrincipal + llTotalInterest */
 } Loan;
 
 bool LoanCalculate(Loan *pLoan);

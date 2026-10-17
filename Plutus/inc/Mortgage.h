@@ -5,29 +5,30 @@
 #ifndef PLUTUS_MORTGAGE_H
 #define PLUTUS_MORTGAGE_H
 
+#include <stdbool.h>
+#include "Loan.h"
+
 typedef enum {
     DownPaymentLow,   /* 10% */
     DownPaymentHigh   /* 20% */
 } DownPaymentType;
 
-/* All money fields are in whole currency units (CZK, USD, EUR, ...). */
+/* Usage:
+   1) set llHomeValue, eDownPayment, and the sLoan inputs (iCurrencyDigits, dRate, iTermMonths)
+   2) call MortgageCalculate
+   3) read llDownPayment and the sLoan outputs (llPayment, llTotalInterest, llTotal) */
 typedef struct {
     /* Inputs */
     long long llHomeValue;
-    int iCurrencyDigits;
     DownPaymentType eDownPayment;
-    double dInterest;             /* annual rate, 0.0525 = 5.25% */
-    int iTermYears;
 
-    /* Outputs, whole units */
+    /* Outputs */
     long long llDownPayment;
-    long long llLoan;
-    long long llMonthlyPayment;
-    long long llTotalInterest;
-    long long llTotalPaid;        /* llLoan + llTotalInterest */
+
+    /* The loan this mortgage is based on. Its principal is set from the home value. */
+    Loan sLoan;
 } Mortgage;
 
-bool MortgageValidate(const Mortgage *pMortgage);
 bool MortgageCalculate(Mortgage *pMortgage);
 
 #endif //PLUTUS_MORTGAGE_H

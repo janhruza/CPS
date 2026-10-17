@@ -6,8 +6,7 @@
 #include <stddef.h>
 #include "../inc/Loan.h"
 
-/* Everything in this file works in minor units (cents, haléře)
-   except the final conversion when results are written out. */
+/* Everything here works in minor units (cents, haléře) except the final conversion. */
 
 static long long Pow10(int iDigits) {
     long long llPower = 1;
@@ -21,19 +20,19 @@ static long long ToWhole(long long llMinor, long long llScale) {
     return (llMinor + llScale / 2) / llScale;   /* round half up, amounts are non-negative */
 }
 
-static long long MonthlyPaymentMinor(long long llLoanMinor, double dRate, int iPayments) {
+static long long MonthlyPaymentMinor(long long llPrincipalMinor, double dRate, int iPayments) {
     if (dRate == 0.0) {
-        return llround((double)llLoanMinor / iPayments);
+        return llround((double)llPrincipalMinor / iPayments);
     }
     double dFactor = pow(1.0 + dRate, iPayments);
-    return llround((double)llLoanMinor * dRate * dFactor / (dFactor - 1.0));
+    return llround((double)llPrincipalMinor * dRate * dFactor / (dFactor - 1.0));
 }
 
 /* Runs the schedule. The last payment clears whatever balance remains.
    Returns true if the balance ends at exactly zero. */
-static bool RunSchedule(long long llLoanMinor, long long llPaymentMinor, double dRate,
+static bool RunSchedule(long long llPrincipalMinor, long long llPaymentMinor, double dRate,
                         int iPayments, long long *pllTotalInterestMinor) {
-    long long llBalance = llLoanMinor;
+    long long llBalance = llPrincipalMinor;
     long long llTotal = 0;
 
     for (int iMonth = 1; iMonth <= iPayments; iMonth++) {
@@ -60,15 +59,17 @@ bool LoanCalculate(Loan *pLoan) {
 
     const long long llScale = Pow10(pLoan->iCurrencyDigits);
     const double dMonthlyRate = pLoan->dRate / 12.0;
-    const long long llLoanMinor = pLoan->llPrincipal * llScale;
-    const long long llPaymentMinor = MonthlyPaymentMinor(llLoanMinor, dMonthlyRate, pLoan->iTermMonths);
+    const long long llPrincipalMinor = pLoan->llPrincipal * llScale;
+    const long long llPaymentMinor =
+        MonthlyPaymentMinor(llPrincipalMinor, dMonthlyRate, pLoan->iTermMonths);
 
     long long llTotalInterestMinor = 0;
-    const bool bOk = RunSchedule(llLoanMinor, llPaymentMinor, dMonthlyRate,
+    const bool bOk = RunSchedule(llPrincipalMinor, llPaymentMinor, dMonthlyRate,
                                  pLoan->iTermMonths, &llTotalInterestMinor);
 
     pLoan->llPayment       = ToWhole(llPaymentMinor, llScale);
     pLoan->llTotalInterest = ToWhole(llTotalInterestMinor, llScale);
+    pLoan->llTotal         = pLoan->llPrincipal + pLoan->llTotalInterest;
 
     return bOk;
 }
