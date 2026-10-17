@@ -17,7 +17,7 @@ typedef enum {
    1) set llHomeValue, eDownPayment, and the sLoan inputs (iCurrencyDigits, dRate, iTermMonths)
    2) call MortgageCalculate
    3) read llDownPayment and the sLoan outputs (llPayment, llTotalInterest, llTotal) */
-typedef struct {
+typedef struct tagMortgage {
     /* Inputs */
     long long llHomeValue;
     DownPaymentType eDownPayment;

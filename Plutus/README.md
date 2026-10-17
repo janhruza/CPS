@@ -15,4 +15,4 @@ Here is a list of Plutus' main features:
 - Mortgage calculator
 
 ## License
-The Plutus project is licensed under the MIT license.
+The Plutus project is licensed under the MIT license (available [here](LICENSE.md)).
