@@ -6,7 +6,7 @@
 #define PLUTUS_MORTGAGE_H
 
 #include <stdbool.h>
-#include "Loan.h"
+#include "../Engine/Loan.h"
 
 typedef enum {
     DownPaymentLow,   /* 10% */

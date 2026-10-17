@@ -5,6 +5,11 @@
 
 int main(int argc, const char** argv, char** envp) {
 
+    if (argc > 1) {
+        fprintf(stderr, "Arguments are disabled.\n");
+        return EXIT_FAILURE;
+    }
+
     Config config = {0};
     config.uNextTransactionId = 12;
 

@@ -4,12 +4,12 @@ project(Plutus C)
 set(CMAKE_C_STANDARD 23)
 
 add_executable(Plutus main.c
-        inc/Mortgage.h
-        src/Mortgage.c
-        inc/Loan.h
-        src/Loan.c
-        inc/Transaction.h
-        src/Transaction.c
+        inc/Engine/Mortgage.h
+        src/Engine/Mortgage.c
+        inc/Engine/Loan.h
+        src/Engine/Loan.c
+        inc/Engine/Transaction.h
+        src/Engine/Transaction.c
         inc/Config.h
         src/Config.c)
 
