@@ -11,6 +11,10 @@ add_executable(Plutus main.c
         inc/Engine/Transaction.h
         src/Engine/Transaction.c
         inc/Config.h
-        src/Config.c)
+        src/Config.c
+        inc/Engine/ExpenseTracker.h
+        inc/MicroApps.h
+        src/MicroApps.c
+        src/Engine/ExpenseTracker.c)
 
 target_link_libraries(Plutus m) # libm math library
