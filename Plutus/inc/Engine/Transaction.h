@@ -6,6 +6,7 @@
 #define PLUTUS_TRANSACTION_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 enum {
     TRANSACTION_INVALID,
@@ -29,5 +30,15 @@ typedef struct tagTransaction {
  * @return true if the transaction is valid, otherwise false.
  */
 bool TransactionValidate(const Transaction *pTransaction);
+
+/**
+ *
+ * @param pTransaction Pointer to the transaction object.
+ * @param separator Value delimiter (separator).
+ * @param buf Pointer to a character buffer.
+ * @param size Size of the output buffer.
+ * @return true if the entire transaction was written to the buffer, otherwise false.
+ */
+bool TransactionToCSV(const Transaction *pTransaction, char separator, char* buf, size_t size);
 
 #endif //PLUTUS_TRANSACTION_H

@@ -15,12 +15,12 @@
 
 /* ---------- Colors (24-bit, needs a truecolor terminal) ---------- */
 
-#define COLOR_BORDER   "\x1b[38;2;90;140;230m"
-#define COLOR_TITLE    "\x1b[1m\x1b[38;2;255;200;80m"
+#define COLOR_BORDER   "\x1b[38;2;60;110;200m"
+#define COLOR_TITLE    "\x1b[1m\x1b[38;2;176;96;0m"
 #define COLOR_HL_BG    "\x1b[48;2;40;110;220m"
 #define COLOR_HL_FG    "\x1b[38;2;255;255;255m"
-#define COLOR_NORMAL   "\x1b[38;2;220;220;220m"
-#define COLOR_DISABLED "\x1b[38;2;100;100;100m"
+#define COLOR_NORMAL   "\x1b[39m"
+#define COLOR_DISABLED "\x1b[38;2;128;128;128m"
 #define COLOR_RESET    "\x1b[0m"
 
 /* ---------- Box drawing characters (UTF-8) ---------- */

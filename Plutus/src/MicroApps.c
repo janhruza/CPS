@@ -47,6 +47,7 @@ bool MAMortgageCalculator(void) {
     printf("Monthly payment: %llu\n", mortgage.sLoan.llPayment);
     printf("Total interest:  %llu\n", mortgage.sLoan.llTotalInterest);
 
+    Pause("Press enter to continue... ");
     return true;
 }
 
@@ -87,6 +88,7 @@ bool MAExpenseTracker(void) {
         ID_DASH,
         ID_EXPENSE,
         ID_INCOME,
+        ID_HISTORY,
         ID_EXIT
     };
 
@@ -95,29 +97,41 @@ bool MAExpenseTracker(void) {
     // initialize the tracker
     ExpenseTracker tracker = {0};
     Transaction transactions[64] = {0};
-    ExpenseTrackerInit(&tracker, transactions, 60);
-
-    MenuItem menus[] = {
-        (MenuItem){.id = ID_DASH, .label = "Dashboard", .selectable = 1, .type = MENU_ITEM},
-        SEPARATOR,
-        (MenuItem){.id = ID_INCOME, .label = "Add income", .selectable = 1, .type = MENU_ITEM},
-        (MenuItem){.id = ID_EXPENSE, .label = "Add expense", .selectable = 1, .type = MENU_ITEM},
-        SEPARATOR,
-        (MenuItem){.id = ID_EXIT, .label = "Exit", .selectable = 1, .type = MENU_ITEM},
-    };
+    ExpenseTrackerInit(&tracker, transactions, sizeof(transactions) / sizeof(Transaction));
 
     bool bExit = false;
     while (bExit == false) {
+        MenuItem menus[] = {
+            (MenuItem){.id = ID_DASH, .label = "Dashboard", .selectable = tracker.uCount > 0 ? 1 : 0, .type = MENU_ITEM},
+            (MenuItem){.id = ID_HISTORY, .label = "History", .selectable = tracker.uCount > 0 ? 1 : 0, .type = MENU_ITEM},
+            SEPARATOR,
+            (MenuItem){.id = ID_INCOME, .label = "Add income", .selectable = 1, .type = MENU_ITEM},
+            (MenuItem){.id = ID_EXPENSE, .label = "Add expense", .selectable = 1, .type = MENU_ITEM},
+            SEPARATOR,
+            (MenuItem){.id = ID_EXIT, .label = "Exit", .selectable = 1, .type = MENU_ITEM},
+        };
+
         const int opt = MenuSelect("Expense Tracker", menus, sizeof(menus) / sizeof(MenuItem));
         if (opt == ID_EXIT) bExit = true;
 
         switch (opt) {
             case ID_DASH:
                 // display dashboard
-                double expenses = ExpenseTrackerSum(&tracker, TRANSACTION_EXPENSE, 0, UINT32_MAX);
-                double incomes = ExpenseTrackerSum(&tracker, TRANSACTION_INCOME, 0, UINT32_MAX);
-                double total = incomes - expenses;
+                const double expenses = ExpenseTrackerSum(&tracker, TRANSACTION_EXPENSE, 0, UINT32_MAX);
+                const double incomes = ExpenseTrackerSum(&tracker, TRANSACTION_INCOME, 0, UINT32_MAX);
+                const double total = incomes - expenses;
                 printf("--- DASHBOARD ---\nIncomes (total): %.2lf\nExpenses (total): %.2lf\nBalance: %.2lf\n\n", incomes, expenses, total);
+
+                Pause("Press enter to continue... ");
+                break;
+
+            case ID_HISTORY:
+                printf("--- TRANSACTIONS ---\n");
+                for (int i = 0; i < tracker.uCount; i++) {
+                    Transaction tr = {0};
+                    ExpenseTrackerGet(&tracker, i, &tr);
+                    printf("%s, value: %.2lf\n", tr.eType == TRANSACTION_EXPENSE ? "Expense" : "Income", tr.dValue);
+                }
 
                 Pause("Press enter to continue... ");
                 break;
