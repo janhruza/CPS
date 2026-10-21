@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "inc/Menu.h"
-
 #include "inc/MicroApps.h"
 
 int main(int argc, const char** argv, char** envp) {
