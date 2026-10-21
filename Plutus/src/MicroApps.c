@@ -4,7 +4,14 @@
 
 #include <stdio.h>
 #include "../inc/Engine/Mortgage.h"
+#include "../inc/Engine/ExpenseTracker.h"
 #include "../inc/MicroApps.h"
+
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include "../inc/Core.h"
+#include "../inc/Menu.h"
 
 bool MAMortgageCalculator(void) {
     Mortgage mortgage = {0};
@@ -43,7 +50,93 @@ bool MAMortgageCalculator(void) {
     return true;
 }
 
+static bool CreateTransaction(ExpenseTracker* pTracker, Transaction* pTr, const uint8_t ttype) {
+    memset((Transaction*)pTr, 0, sizeof(Transaction));
+    const uint64_t timeNow = time(nullptr);
+
+    pTr->uId = timeNow;
+    pTr->eType = ttype;
+    pTr->uCreationTimeMs = timeNow;
+    pTr->uDate = timeNow;
+
+    // get value
+    printf("Enter value for income: ");
+    const double value = ReadDouble();
+
+    pTr->dValue = value;
+
+    if (!TransactionValidate(pTr)) {
+        fprintf(stderr, "Transaction validation failed\n");
+        Pause("Press enter to continue... ");
+        return false;
+    }
+
+    if (ExpenseTrackerAdd(pTracker, pTr) == false) {
+        fputs("Failed to add transaction to the tracker\n", stderr);
+        Pause("Press enter to continue... ");
+        return false;
+    }
+
+    return true;
+}
 
 bool MAExpenseTracker(void) {
+    // simple, in-memory, expense tracker
+
+    enum {
+        ID_DASH,
+        ID_EXPENSE,
+        ID_INCOME,
+        ID_EXIT
+    };
+
+#define SEPARATOR (MenuItem) {.id = 0, .label = "", .selectable = 0, .type = MENU_SEPARATOR}
+
+    // initialize the tracker
+    ExpenseTracker tracker = {0};
+    Transaction transactions[64] = {0};
+    ExpenseTrackerInit(&tracker, transactions, 60);
+
+    MenuItem menus[] = {
+        (MenuItem){.id = ID_DASH, .label = "Dashboard", .selectable = 1, .type = MENU_ITEM},
+        SEPARATOR,
+        (MenuItem){.id = ID_INCOME, .label = "Add income", .selectable = 1, .type = MENU_ITEM},
+        (MenuItem){.id = ID_EXPENSE, .label = "Add expense", .selectable = 1, .type = MENU_ITEM},
+        SEPARATOR,
+        (MenuItem){.id = ID_EXIT, .label = "Exit", .selectable = 1, .type = MENU_ITEM},
+    };
+
+    bool bExit = false;
+    while (bExit == false) {
+        const int opt = MenuSelect("Expense Tracker", menus, sizeof(menus) / sizeof(MenuItem));
+        if (opt == ID_EXIT) bExit = true;
+
+        switch (opt) {
+            case ID_DASH:
+                // display dashboard
+                double expenses = ExpenseTrackerSum(&tracker, TRANSACTION_EXPENSE, 0, UINT32_MAX);
+                double incomes = ExpenseTrackerSum(&tracker, TRANSACTION_INCOME, 0, UINT32_MAX);
+                double total = incomes - expenses;
+                printf("--- DASHBOARD ---\nIncomes (total): %.2lf\nExpenses (total): %.2lf\nBalance: %.2lf\n\n", incomes, expenses, total);
+
+                Pause("Press enter to continue... ");
+                break;
+
+            case ID_INCOME:
+                Transaction income = {0};
+                CreateTransaction(&tracker, &income, TRANSACTION_INCOME);
+                break;
+
+            case ID_EXPENSE:
+                Transaction expense = {0};
+                CreateTransaction(&tracker, &expense,TRANSACTION_EXPENSE);
+                break;
+
+            default: break;
+        }
+    }
+
+#undef SEPARATOR
+
     return true;
 }
