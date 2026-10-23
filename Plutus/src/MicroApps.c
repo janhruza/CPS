@@ -12,6 +12,7 @@
 #include <time.h>
 #include "../inc/Core.h"
 #include "../inc/Menu.h"
+#include "../inc/Engine/Investment.h"
 
 bool MAMortgageCalculator(void) {
     Mortgage mortgage = {0};
@@ -153,4 +154,40 @@ bool MAExpenseTracker(void) {
 #undef SEPARATOR
 
     return true;
+}
+
+bool MAInvestmentCalculator(void) {
+    Investment inv = {0};
+    bool bReturn = true;
+
+    puts("--- INVESTMENT CALCULATOR ---");
+
+    // initial value
+    printf("Initial value: ");
+    inv.llInitial = ReadLongLong();
+
+    printf("Term (years): ");
+    inv.iTermMonths = ReadInt() * 12;
+
+    printf("Monthly contribution: ");
+    inv.llContribution = ReadLongLong();
+
+    printf("Annual rate (e. g. 0.025 = 2.5 %%): ");
+    inv.dRate = ReadDouble();
+
+    if (InvestmentCalculate(&inv) == false) {
+        fputs("Unable to calculate the investment.", stderr);
+        bReturn = false;
+    }
+
+    else {
+        puts("\nRESULTS");
+        printf("Future value: %lld\nTotal contribution: %lld\nGain: %lld\n", inv.llFutureValue, inv.llTotalContributed, inv.llGain);
+    }
+
+    puts("--- END OF INVESTMENT CALCULATOR ---");
+
+    Pause("\nPress enter to continue... ");
+
+    return bReturn;
 }
