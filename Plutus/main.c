@@ -5,7 +5,8 @@
 #include "inc/Menu.h"
 
 enum {
-    APP_MORTGAGE = 1,
+    APP_EXIT,
+    APP_MORTGAGE,
     APP_INVESTMENT,
     APP_TRACKER
 };
@@ -16,12 +17,12 @@ int main(int argc, const char** argv, char** envp) {
         return EXIT_FAILURE;
     }
 
-    MenuItem menu[] = {
-        (MenuItem) {.id = APP_MORTGAGE, "Mortgage Calculator", 1, MENU_ITEM},
-        (MenuItem) {.id = APP_INVESTMENT, "Investment Calculator", 1, MENU_ITEM},
-        (MenuItem) {.id = APP_TRACKER, "Expense Tracker", 1, MENU_ITEM},
-        (MenuItem) {.id = 0, "", 1, MENU_SEPARATOR},
-        (MenuItem) {.id = 0, "Exit", 1, MENU_ITEM}
+    const MenuItem menu[] = {
+        (MenuItem) {.id = APP_MORTGAGE, .label = "Mortgage Calculator", .selectable = 1, .type = MENU_ITEM},
+        (MenuItem) {.id = APP_INVESTMENT, .label = "Investment Calculator", .selectable = 1, .type = MENU_ITEM},
+        (MenuItem) {.id = APP_TRACKER, .label = "Expense Tracker", .selectable = 1, .type = MENU_ITEM},
+        (MenuItem) MENU_SEPARATOR_ITEM,
+        (MenuItem) {.id = APP_EXIT, .label = "Exit", .selectable = 1, .type = MENU_ITEM}
     };
 
     bool bExit = false;

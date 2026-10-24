@@ -10,7 +10,7 @@ typedef enum {
     MENU_SEPARATOR   /* horizontal rule spanning the box */
 } MenuItemType;
 
-typedef struct {
+typedef struct tagMenuItem {
     int          id;          /* returned by MenuSelect() when chosen */
     const char  *label;       /* unused for separators */
     int          selectable;  /* 0 = shown dimmed, cursor skips it */
