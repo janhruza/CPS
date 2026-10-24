@@ -26,6 +26,9 @@ typedef struct tagPlutusFile {
     char footer[8];
 } PlutusFile;
 
+PlutusFile* PlutusCreate();
+void PlutusDestroy(PlutusFile *file);
+
 bool PlutusInit(PlutusFile *file);
 bool PlutusSave(const char* filename, const PlutusFile *file);
 bool PlutusLoad(const char* filename, PlutusFile *file);

@@ -5,11 +5,17 @@
 #include "../../inc/Engine/PlutusFile.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 bool PlutusInit(PlutusFile *file) {
     if (file == nullptr) return false;
     memset(file, 0, sizeof(PlutusFile));
+
+    static constexpr char buf[8] = {'P', 'L', 'T', 'S', 'F', 'I', 'L', 'E'};
+    memcpy(file->header, buf, sizeof buf);
+    memcpy(file->footer, buf, sizeof buf);
+
     return true;
 }
 
@@ -49,3 +55,14 @@ bool PlutusPutTransactions(const Transaction *transactions, const uint64_t count
 
     return true;
 }
+
+PlutusFile* PlutusCreate() {
+    return calloc(1, sizeof(PlutusFile));
+}
+
+void PlutusDestroy(PlutusFile *file) {
+    free(file);
+    return;
+}
+
+void PlutusDestroy(PlutusFile *file);

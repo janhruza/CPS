@@ -99,8 +99,8 @@ bool MAExpenseTracker(void) {
 #define SEPARATOR (MenuItem) {.id = 0, .label = "", .selectable = 0, .type = MENU_SEPARATOR}
 
     // file data
-    PlutusFile file;
-    PlutusInit(&file);
+    PlutusFile* pFile = PlutusCreate();
+    PlutusInit(pFile);
 
     // initialize the tracker
     ExpenseTracker tracker = {0};
@@ -159,25 +159,25 @@ bool MAExpenseTracker(void) {
                 break;
 
             case ID_IMPORT:
-                if (PlutusLoad(filename, &file) == false) {
+                if (PlutusLoad(filename, pFile) == false) {
                     fputs("Failed to load plutus file\n", stderr);
                     Pause("Press enter to continue... ");
                     break;
                 }
 
                 tracker.uCapacity = PLUTUS_MAX_TRANSACTIONS;
-                tracker.pItems = file.transactions;
-                tracker.uCount = file.uNextPos;
+                tracker.pItems = pFile->transactions;
+                tracker.uCount = pFile->uNextPos;
 
                 break;
 
             case ID_EXPORT:
-                if (!PlutusPutTransactions(tracker.pItems, tracker.uCount, &file)) {
+                if (!PlutusPutTransactions(tracker.pItems, tracker.uCount, pFile)) {
                     fputs("Failed to prepare export\n", stderr);
                     Pause("Press enter to continue... ");
                     break;
                 }
-                if (!PlutusSave(filename, &file)) {
+                if (!PlutusSave(filename, pFile)) {
                     fputs("Failed to save plutus file\n", stderr);
                     Pause("Press enter to continue... ");
                 }
@@ -189,6 +189,7 @@ bool MAExpenseTracker(void) {
 
 #undef SEPARATOR
 
+    PlutusDestroy(pFile);
     return true;
 }
 
