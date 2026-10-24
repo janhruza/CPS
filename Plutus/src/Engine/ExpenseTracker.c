@@ -91,7 +91,7 @@ double ExpenseTrackerSum(const ExpenseTracker *pTracker, uint8_t eType,
     double dSum = 0.0;
     for (size_t uIndex = 0; uIndex < pTracker->uCount; uIndex++) {
         const Transaction *pItem = &pTracker->pItems[uIndex];
-        if (pItem->eType == eType &&
+        if (pItem->uType == eType &&
             pItem->uDate >= uFromDate && pItem->uDate <= uToDate) {
             dSum += pItem->dValue;
         }
@@ -105,9 +105,9 @@ double ExpenseTrackerBalance(const ExpenseTracker *pTracker) {
     double dBalance = 0.0;
     for (size_t uIndex = 0; uIndex < pTracker->uCount; uIndex++) {
         const Transaction *pItem = &pTracker->pItems[uIndex];
-        if (pItem->eType == TRANSACTION_INCOME) {
+        if (pItem->uType == TRANSACTION_INCOME) {
             dBalance += pItem->dValue;
-        } else if (pItem->eType == TRANSACTION_EXPENSE) {
+        } else if (pItem->uType == TRANSACTION_EXPENSE) {
             dBalance -= pItem->dValue;
         }
     }

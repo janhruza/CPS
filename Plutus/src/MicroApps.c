@@ -58,8 +58,7 @@ static bool CreateTransaction(ExpenseTracker* pTracker, Transaction* pTr, const 
     const uint64_t timeNow = time(nullptr);
 
     pTr->uId = timeNow;
-    pTr->eType = ttype;
-    pTr->uCreationTimeMs = timeNow;
+    pTr->uType = ttype;
     pTr->uDate = timeNow;
 
     // get value
@@ -142,7 +141,7 @@ bool MAExpenseTracker(void) {
                 for (int i = 0; i < tracker.uCount; i++) {
                     Transaction tr = {0};
                     ExpenseTrackerGet(&tracker, i, &tr);
-                    printf("%s, value: %.2lf\n", tr.eType == TRANSACTION_EXPENSE ? "Expense" : "Income", tr.dValue);
+                    printf("%s, value: %.2lf\n", tr.uType == TRANSACTION_EXPENSE ? "Expense" : "Income", tr.dValue);
                 }
 
                 Pause("Press enter to continue... ");
