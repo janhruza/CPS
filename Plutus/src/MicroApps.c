@@ -13,6 +13,7 @@
 #include "../inc/Core.h"
 #include "../inc/Menu.h"
 #include "../inc/Engine/Investment.h"
+#include "../inc/Engine/PlutusFile.h"
 
 bool MAMortgageCalculator(void) {
     Mortgage mortgage = {0};
@@ -90,10 +91,16 @@ bool MAExpenseTracker(void) {
         ID_EXPENSE,
         ID_INCOME,
         ID_HISTORY,
-        ID_EXIT
+        ID_EXIT,
+        ID_EXPORT,
+        ID_IMPORT
     };
 
 #define SEPARATOR (MenuItem) {.id = 0, .label = "", .selectable = 0, .type = MENU_SEPARATOR}
+
+    // file data
+    PlutusFile file;
+    PlutusInit(&file);
 
     // initialize the tracker
     ExpenseTracker tracker = {0};
@@ -102,15 +109,19 @@ bool MAExpenseTracker(void) {
 
     bool bExit = false;
     while (bExit == false) {
-        MenuItem menus[] = {
-            (MenuItem){.id = ID_DASH, .label = "Dashboard", .selectable = tracker.uCount > 0 ? 1 : 0, .type = MENU_ITEM},
-            (MenuItem){.id = ID_HISTORY, .label = "History", .selectable = tracker.uCount > 0 ? 1 : 0, .type = MENU_ITEM},
-            SEPARATOR,
-            (MenuItem){.id = ID_INCOME, .label = "Add income", .selectable = 1, .type = MENU_ITEM},
-            (MenuItem){.id = ID_EXPENSE, .label = "Add expense", .selectable = 1, .type = MENU_ITEM},
-            SEPARATOR,
-            (MenuItem){.id = ID_EXIT, .label = "Exit", .selectable = 1, .type = MENU_ITEM},
-        };
+        const char *filename = "ExpenseTracker.plutus";
+        const MenuItem menus[] = {
+                (MenuItem){.id = ID_DASH, .label = "Dashboard", .selectable = tracker.uCount > 0 ? 1 : 0, .type = MENU_ITEM},
+                (MenuItem){.id = ID_HISTORY, .label = "History", .selectable = tracker.uCount > 0 ? 1 : 0, .type = MENU_ITEM},
+                SEPARATOR,
+                (MenuItem){.id = ID_INCOME, .label = "Add income", .selectable = 1, .type = MENU_ITEM},
+                (MenuItem){.id = ID_EXPENSE, .label = "Add expense", .selectable = 1, .type = MENU_ITEM},
+                SEPARATOR,
+                (MenuItem){.id = ID_IMPORT, .label = "Import", .selectable = 1, .type = MENU_ITEM},
+                (MenuItem){.id = ID_EXPORT, .label = "Export", .selectable = 1, .type = MENU_ITEM},
+                SEPARATOR,
+                (MenuItem){.id = ID_EXIT, .label = "Exit", .selectable = 1, .type = MENU_ITEM},
+            };
 
         const int opt = MenuSelect("Expense Tracker", menus, sizeof(menus) / sizeof(MenuItem));
         if (opt == ID_EXIT) bExit = true;
@@ -145,6 +156,31 @@ bool MAExpenseTracker(void) {
             case ID_EXPENSE:
                 Transaction expense = {0};
                 CreateTransaction(&tracker, &expense,TRANSACTION_EXPENSE);
+                break;
+
+            case ID_IMPORT:
+                if (PlutusLoad(filename, &file) == false) {
+                    fputs("Failed to load plutus file\n", stderr);
+                    Pause("Press enter to continue... ");
+                    break;
+                }
+
+                tracker.uCapacity = PLUTUS_MAX_TRANSACTIONS;
+                tracker.pItems = file.transactions;
+                tracker.uCount = file.uNextPos;
+
+                break;
+
+            case ID_EXPORT:
+                if (!PlutusPutTransactions(tracker.pItems, tracker.uCount, &file)) {
+                    fputs("Failed to prepare export\n", stderr);
+                    Pause("Press enter to continue... ");
+                    break;
+                }
+                if (!PlutusSave(filename, &file)) {
+                    fputs("Failed to save plutus file\n", stderr);
+                    Pause("Press enter to continue... ");
+                }
                 break;
 
             default: break;
