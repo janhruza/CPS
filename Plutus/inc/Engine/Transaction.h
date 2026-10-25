@@ -9,9 +9,10 @@
 #include <stddef.h>
 
 enum {
-    TRANSACTION_INVALID,
-    TRANSACTION_INCOME,
-    TRANSACTION_EXPENSE
+    TRANSACTION_INVALID,    /* Invalid type. */
+    TRANSACTION_INCOME,     /* Income type. */
+    TRANSACTION_EXPENSE,    /* Expense type. */
+    TRANSACTION_CUSTOM      /* Custom, user defined, transaction types starts at this value. */
 };
 
 typedef struct tagTransaction {

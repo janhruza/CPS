@@ -9,8 +9,8 @@
 #include "../Engine/Loan.h"
 
 typedef enum {
-    DownPaymentLow,   /* 10% */
-    DownPaymentHigh   /* 20% */
+    DOWN_PAY_LOW,   /* 10% */
+    DOWN_PAY_HIGH   /* 20% */
 } DownPaymentType;
 
 /* Usage:

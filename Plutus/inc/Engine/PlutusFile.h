@@ -9,12 +9,12 @@
 #include "Transaction.h"
 
 #define PLUTUS_MAX_TRANSACTIONS 131072
-#define PLUTUS_SIGNATURE        "PLTSFILE"
+#define PLUTUS_SIGNATURE_SIZE   8
 
 /* Representing the plutus file structure. */
 typedef struct tagPlutusFile {
     /* First 8 bytes of the file. Must match with footer. */
-    char header[8];
+    char header[PLUTUS_SIGNATURE_SIZE];
 
     /* Position of the next transaction within the 'transactions' array. */
     uint64_t uNextPos;
@@ -23,7 +23,7 @@ typedef struct tagPlutusFile {
     Transaction transactions[PLUTUS_MAX_TRANSACTIONS];
 
     /* Last 8 bytes of the file. Must match with header. */
-    char footer[8];
+    char footer[PLUTUS_SIGNATURE_SIZE];
 } PlutusFile;
 
 PlutusFile* PlutusCreate();

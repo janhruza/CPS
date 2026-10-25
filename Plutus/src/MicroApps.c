@@ -25,7 +25,7 @@ bool MAMortgageCalculator(void) {
     int age = 0;
     printf("Age: ");
     scanf("%d", &age);
-    mortgage.eDownPayment = age < 36 ? DownPaymentLow : DownPaymentHigh;
+    mortgage.eDownPayment = age < 36 ? DOWN_PAY_LOW : DOWN_PAY_HIGH;
 
     double interest = 0;
     printf("Interest: ");
