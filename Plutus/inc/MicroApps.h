@@ -10,5 +10,6 @@
 bool MAMortgageCalculator(void);
 bool MAExpenseTracker(void);
 bool MAInvestmentCalculator(void);
+bool MAInvestmentChart(void);
 
 #endif //PLUTUS_MICROAPPS_H
