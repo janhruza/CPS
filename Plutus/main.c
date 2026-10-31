@@ -31,7 +31,7 @@ static void FormatCurrency(double val, char *buf, size_t size) {
 }
 
 static void RunInvestmentChartTest(void) {
-    puts("\n========================================");
+    puts("========================================");
     puts("   INVESTMENT CHART TEST (SDL)");
     puts("========================================");
 
@@ -196,7 +196,7 @@ static void RunInvestmentChartTest(void) {
         SDL_RenderClear(renderer);
 
         // Header Title & Legend
-        DrawText(renderer, padL, 20, "PLUTUS - INVESTMENT GROWTH CHART", cText, 2);
+        DrawText(renderer, padL, 20, "INVESTMENT GROWTH CHART", cText, 2);
 
         char statsBuf[256];
         snprintf(statsBuf, sizeof(statsBuf),
