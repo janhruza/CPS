@@ -12,6 +12,9 @@ enum {
 };
 
 int main(int argc, const char** argv, char** envp) {
+    (void)argv;
+    (void)envp;
+
     if (argc > 1) {
         fprintf(stderr, "Arguments are disabled.\n");
         return EXIT_FAILURE;
@@ -26,33 +29,30 @@ int main(int argc, const char** argv, char** envp) {
     };
 
     bool bExit = false;
-    int lastResult = 0;
     while (!bExit) {
         const int opt = MenuSelect("Main Menu", menu, sizeof(menu) / sizeof(MenuItem));
         switch (opt) {
             case APP_MORTGAGE:
-                lastResult = MAMortgageCalculator();
+                MAMortgageCalculator();
                 break;
 
             case APP_INVESTMENT:
-                lastResult = MAInvestmentCalculator();
+                MAInvestmentCalculator();
                 break;
 
             case APP_TRACKER:
-                lastResult = MAExpenseTracker();
+                MAExpenseTracker();
                 break;
 
-            case 0:
+            case APP_EXIT:
             case -1:
                 bExit = true;
                 break;
 
-                default: break;
+            default:
+                break;
         }
     }
 
-    return (bool)lastResult == true ? EXIT_SUCCESS : EXIT_FAILURE;
-
-    // main goes here
-    //return MAExpenseTracker() == true ? EXIT_SUCCESS : EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }

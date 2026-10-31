@@ -7,34 +7,25 @@
 
 #include "../inc/Config.h"
 
-bool ConfigRead(const Config *pConfig) {
+bool ConfigRead(Config *pConfig) {
     if (pConfig == nullptr) return false;
-    const FILE* f = fopen(CONFIG_FILE_NAME, "rb");
+    FILE* f = fopen(CONFIG_FILE_NAME, "rb");
     if (f == nullptr) return false;
 
-    bool ret = true;
-    const size_t read = fread((void*)pConfig, sizeof(Config), 1, (FILE*)f);
-    if (read != sizeof(Config)) {
-        ret = false;
-    }
+    const size_t read = fread(pConfig, sizeof(Config), 1, f);
+    fclose(f);
 
-    fclose((FILE*)f);
-    return ret;
+    return read == 1;
 }
 
 bool ConfigWrite(const Config *pConfig) {
     if (pConfig == nullptr) return false;
 
-    bool ret = true;
-
-    const FILE* f = fopen(CONFIG_FILE_NAME, "wb");
+    FILE* f = fopen(CONFIG_FILE_NAME, "wb");
     if (f == nullptr) return false;
 
-    const size_t written = fwrite(pConfig, sizeof(Config), 1, (FILE*)f);
-    if (written != sizeof(Config)) {
-        ret = false;
-    }
+    const size_t written = fwrite(pConfig, sizeof(Config), 1, f);
+    fclose(f);
 
-    fclose((FILE*)f);
-    return ret;
+    return written == 1;
 }

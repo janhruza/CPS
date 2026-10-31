@@ -7,6 +7,8 @@
 
 bool InvestmentCalculate(Investment *pInvestment) {
     if (pInvestment == nullptr) return false;
+    if (pInvestment->llInitial < 0 || pInvestment->llContribution < 0 || pInvestment->iTermMonths <= 0) return false;
+    if (!isfinite(pInvestment->dRate) || pInvestment->dRate < 0.0) return false;
 
     const double monthlyReturn = pInvestment->dRate / 12.0;
     const double growth = pow(1.0 + monthlyReturn, pInvestment->iTermMonths);

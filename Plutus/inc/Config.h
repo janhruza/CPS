@@ -16,7 +16,7 @@ typedef struct tagConfig {
     uint64_t uNextTransactionId; /* Representing the next transaction ID. */
 } Config;
 
-bool ConfigRead(const Config *pConfig);
+bool ConfigRead(Config *pConfig);
 bool ConfigWrite(const Config *pConfig);
 
 

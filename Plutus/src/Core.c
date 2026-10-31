@@ -144,18 +144,33 @@ bool InitProgressBar(ProgressBar *pBar) {
 
 bool DrawProgress(const ProgressBar *pBar) {
     if (pBar == nullptr) return false;
-    if (pBar->dMin > pBar->dMax) return false;
+    if (pBar->dMin >= pBar->dMax) return false;
+    if (pBar->uWidth == 0) return false;
     if (!pBar->bInitialized) return false;
 
-    printf("%s [", pBar->pszLabel);
+    if (pBar->pszLabel != nullptr) {
+        printf("%s [", pBar->pszLabel);
+    } else {
+        printf("[");
+    }
+
+    // clamp value to [dMin, dMax]
+    double dVal = pBar->dValue;
+    if (dVal < pBar->dMin) dVal = pBar->dMin;
+    if (dVal > pBar->dMax) dVal = pBar->dMax;
 
     // draw fraction
     // example: min 10, max 20, width 20, value 17.6 => 7.6 / 10 => 76%
-    const double dFraction = (pBar->dValue - pBar->dMin) / (pBar->dMax - pBar->dMin);
-    const int iFilled = (int)llround(dFraction * pBar->uWidth);
+    const double dFraction = (dVal - pBar->dMin) / (pBar->dMax - pBar->dMin);
+    int iFilled = (int)llround(dFraction * pBar->uWidth);
+    if (iFilled < 0) iFilled = 0;
+    if (iFilled > pBar->uWidth) iFilled = pBar->uWidth;
+
+    const char cFill = pBar->cFill != '\0' ? pBar->cFill : '#';
+    const char cBlank = pBar->cBlank != '\0' ? pBar->cBlank : '.';
 
     for (int i = 0; i < pBar->uWidth; i++) {
-        putchar(i < iFilled ? '#' : '.');
+        putchar(i < iFilled ? cFill : cBlank);
     }
 
     printf("] %.0f%%", dFraction * 100.0);

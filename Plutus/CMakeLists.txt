@@ -1,7 +1,10 @@
-cmake_minimum_required(VERSION 4.3)
+cmake_minimum_required(VERSION 3.25)
 project(Plutus C)
 
 set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+add_compile_options(-Wall -Wextra -Wpedantic)
 
 add_executable(Plutus main.c
         inc/Engine/Mortgage.h
@@ -26,4 +29,5 @@ add_executable(Plutus main.c
         src/Engine/PlutusFile.c
         inc/Ansi.h)
 
+target_include_directories(Plutus PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(Plutus m) # libm math library
