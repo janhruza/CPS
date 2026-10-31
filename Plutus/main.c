@@ -10,7 +10,10 @@ enum {
     APP_MORTGAGE,
     APP_INVESTMENT,
     APP_TRACKER,
-    APP_INVESTMENT_CHART
+    APP_INVESTMENT_CHART,
+    APP_MORTGAGE_CHART,
+    APP_LOAN_COMPARISON,
+    APP_EXPENSE_REPORT
 };
 
 int main(int argc, const char** argv, char** envp) {
@@ -26,12 +29,17 @@ int main(int argc, const char** argv, char** envp) {
     }
 
     const MenuItem menu[] = {
-        (MenuItem) {.id = APP_MORTGAGE, .label = "Mortgage Calculator", .selectable = 1, .type = MENU_ITEM},
-        (MenuItem) {.id = APP_INVESTMENT, .label = "Investment Calculator", .selectable = 1, .type = MENU_ITEM},
-        (MenuItem) {.id = APP_INVESTMENT_CHART, .label = "Investment Chart (SDL Test)", .selectable = 1, .type = MENU_ITEM},
-        (MenuItem) {.id = APP_TRACKER, .label = "Expense Tracker", .selectable = 1, .type = MENU_ITEM},
+        (MenuItem) {.id = APP_MORTGAGE,        .label = "Mortgage Calculator",        .selectable = 1, .type = MENU_ITEM},
+        (MenuItem) {.id = APP_INVESTMENT,      .label = "Investment Calculator",      .selectable = 1, .type = MENU_ITEM},
+        (MenuItem) {.id = APP_TRACKER,         .label = "Expense Tracker",            .selectable = 1, .type = MENU_ITEM},
         (MenuItem) MENU_SEPARATOR_ITEM,
-        (MenuItem) {.id = APP_EXIT, .label = "Exit", .selectable = 1, .type = MENU_ITEM}
+        (MenuItem) {.id = -1, .label = "SDL Charts", .selectable = 0, .type = MENU_ITEM},
+        (MenuItem) {.id = APP_INVESTMENT_CHART,.label = "Investment Chart",            .selectable = 1, .type = MENU_ITEM},
+        (MenuItem) {.id = APP_MORTGAGE_CHART,  .label = "Mortgage Amortisation Chart",.selectable = 1, .type = MENU_ITEM},
+        (MenuItem) {.id = APP_LOAN_COMPARISON, .label = "Loan Comparison Chart",      .selectable = 1, .type = MENU_ITEM},
+        (MenuItem) {.id = APP_EXPENSE_REPORT,  .label = "Expense Report Chart",       .selectable = 1, .type = MENU_ITEM},
+        (MenuItem) MENU_SEPARATOR_ITEM,
+        (MenuItem) {.id = APP_EXIT,            .label = "Exit",                        .selectable = 1, .type = MENU_ITEM}
     };
 
     bool bExit = false;
@@ -48,6 +56,18 @@ int main(int argc, const char** argv, char** envp) {
 
             case APP_INVESTMENT_CHART:
                 MAInvestmentChart();
+                break;
+
+            case APP_MORTGAGE_CHART:
+                MAMortgageChart();
+                break;
+
+            case APP_LOAN_COMPARISON:
+                MALoanComparisonChart();
+                break;
+
+            case APP_EXPENSE_REPORT:
+                MAExpenseReport();
                 break;
 
             case APP_TRACKER:
