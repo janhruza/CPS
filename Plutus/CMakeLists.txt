@@ -6,6 +6,8 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
+find_package(SDL2 REQUIRED)
+
 add_executable(Plutus main.c
         inc/Engine/Mortgage.h
         src/Engine/Mortgage.c
@@ -27,7 +29,8 @@ add_executable(Plutus main.c
         src/Engine/Investment.c
         inc/Engine/PlutusFile.h
         src/Engine/PlutusFile.c
-        inc/Ansi.h)
+        inc/Ansi.h
+        inc/Font.h)
 
 target_include_directories(Plutus PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(Plutus m) # libm math library
+target_link_libraries(Plutus m SDL2::SDL2) # libm math library & SDL2
