@@ -78,7 +78,11 @@ static bool CreateTransaction(ExpenseTracker* pTracker, Transaction* pTr, const 
 
     // Standardize date as YYYYMMDD
     struct tm tmNow;
+#ifdef _WIN32
+    localtime_s(&tmNow, &tNow);
+#else
     localtime_r(&tNow, &tmNow);
+#endif
     pTr->uDate = (uint32_t)((tmNow.tm_year + 1900) * 10000 + (tmNow.tm_mon + 1) * 100 + tmNow.tm_mday);
 
     // Prompt with correct transaction type label

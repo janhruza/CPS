@@ -4,7 +4,11 @@ project(Plutus C)
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-add_compile_options(-Wall -Wextra -Wpedantic)
+if (MSVC)
+    add_compile_options(/W4)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
 find_package(SDL2 REQUIRED)
 
@@ -33,4 +37,8 @@ add_executable(Plutus main.c
         inc/Font.h)
 
 target_include_directories(Plutus PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(Plutus m SDL2::SDL2) # libm math library & SDL2
+
+if (NOT WIN32)
+    target_link_libraries(Plutus m)
+endif()
+target_link_libraries(Plutus SDL2::SDL2)

@@ -2,17 +2,25 @@
 // Created by jan on 10/19/26.
 //
 
-/* menu.c - boxed menu TUI
- * Keys: Up/Down or k/j to move, Space to select, q to quit
+/* menu.c - boxed menu TUI (cross-platform Linux & Windows)
+ * Keys: Up/Down or k/j or w/s to move, Space/Enter to select, q/ESC to quit
  */
 #include "../inc/Menu.h"
 #include "../inc/Ansi.h"
 
 #include <stdio.h>
 #include <string.h>
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <conio.h>
+#else
 #include <termios.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <sys/select.h>
+#endif
 
 /* ---------- Palette (named here, built from the ANSI header) ---------- */
 
@@ -37,14 +45,24 @@
 #define BOX_MAX_INNER 60
 #define BOX_MIN_INNER 10
 
-/* ---------- Helpers ---------- */
+/* ---------- Platform Terminal Helpers ---------- */
 
 static int term_width(void)
 {
+#ifdef _WIN32
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hOut != INVALID_HANDLE_VALUE && GetConsoleScreenBufferInfo(hOut, &csbi)) {
+        int w = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+        if (w > 0) return w;
+    }
+    return 80;
+#else
     struct winsize ws;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0 && ws.ws_col > 0)
         return ws.ws_col;
     return 80;
+#endif
 }
 
 /* Width of the space between the left and right edge characters. */
@@ -173,6 +191,81 @@ void DrawMenu(const char *title, const MenuItem items[], int count, int cursor)
     fflush(stdout);
 }
 
+/* ---------- Input Action ---------- */
+
+typedef enum {
+    ACTION_NONE,
+    ACTION_UP,
+    ACTION_DOWN,
+    ACTION_SELECT,
+    ACTION_QUIT
+} MenuAction;
+
+#ifdef _WIN32
+static MenuAction ReadAction(void)
+{
+    int c = _getch();
+    if (c == 0 || c == 0xE0 || c == 224) {
+        int ext = _getch();
+        if (ext == 72) return ACTION_UP;   // Up Arrow
+        if (ext == 80) return ACTION_DOWN; // Down Arrow
+        return ACTION_NONE;
+    }
+    if (c == 27 || c == 'q' || c == 'Q') { // ESC or Q
+        return ACTION_QUIT;
+    }
+    if (c == '\r' || c == '\n' || c == ' ') {
+        return ACTION_SELECT;
+    }
+    if (c == 'k' || c == 'K' || c == 'w' || c == 'W') {
+        return ACTION_UP;
+    }
+    if (c == 'j' || c == 'J' || c == 's' || c == 'S') {
+        return ACTION_DOWN;
+    }
+    return ACTION_NONE;
+}
+#else
+static MenuAction ReadAction(void)
+{
+    unsigned char c;
+    if (read(STDIN_FILENO, &c, 1) != 1)
+        return ACTION_QUIT;
+
+    if (c == 'q' || c == 'Q') {
+        return ACTION_QUIT;
+    }
+    if (c == '\r' || c == '\n' || c == ' ') {
+        return ACTION_SELECT;
+    }
+    if (c == 'k' || c == 'K' || c == 'w' || c == 'W') {
+        return ACTION_UP;
+    }
+    if (c == 'j' || c == 'J' || c == 's' || c == 'S') {
+        return ACTION_DOWN;
+    }
+    if (c == 27) { // ESC or escape sequence
+        fd_set fds;
+        FD_ZERO(&fds);
+        FD_SET(STDIN_FILENO, &fds);
+        struct timeval tv = { .tv_sec = 0, .tv_usec = 40000 };
+        if (select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0) {
+            char seq[2];
+            if (read(STDIN_FILENO, &seq[0], 1) == 1 && (seq[0] == '[' || seq[0] == 'O')) {
+                if (read(STDIN_FILENO, &seq[1], 1) == 1) {
+                    if (seq[1] == 'A') return ACTION_UP;
+                    if (seq[1] == 'B') return ACTION_DOWN;
+                }
+            }
+            return ACTION_NONE;
+        } else {
+            return ACTION_QUIT; // standalone ESC pressed
+        }
+    }
+    return ACTION_NONE;
+}
+#endif
+
 /* ---------- Select ---------- */
 
 int MenuSelect(const char *title, const MenuItem items[], int count)
@@ -180,6 +273,16 @@ int MenuSelect(const char *title, const MenuItem items[], int count)
     if (count <= 0)
         return -1;
 
+#ifdef _WIN32
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD dwOriginalOutMode = 0;
+    UINT originalCP = GetConsoleOutputCP();
+    if (hOut != INVALID_HANDLE_VALUE) {
+        GetConsoleMode(hOut, &dwOriginalOutMode);
+        SetConsoleMode(hOut, dwOriginalOutMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+    }
+    SetConsoleOutputCP(CP_UTF8);
+#else
     struct termios orig, raw;
     tcgetattr(STDIN_FILENO, &orig);
     raw = orig;
@@ -187,6 +290,7 @@ int MenuSelect(const char *title, const MenuItem items[], int count)
     raw.c_cc[VMIN]  = 1;
     raw.c_cc[VTIME] = 0;
     tcsetattr(STDIN_FILENO, TCSANOW, &raw);
+#endif
 
     int cursor = first_selectable(items, count);
     int result = -1;
@@ -194,33 +298,30 @@ int MenuSelect(const char *title, const MenuItem items[], int count)
     for (;;) {
         DrawMenu(title, items, count, cursor);
 
-        unsigned char c;
-        if (read(STDIN_FILENO, &c, 1) != 1)
+        MenuAction action = ReadAction();
+        if (action == ACTION_QUIT) {
             break;
-
-        if (c == 'q' || c == 'Q') {
-            break;
-        } else if (c == '\r' || c == '\n' || c == ' ') {
+        } else if (action == ACTION_SELECT) {
             if (items[cursor].selectable) {
                 result = items[cursor].id;
                 break;
             }
-        } else if (c == 'k') {
+        } else if (action == ACTION_UP) {
             cursor = next_selectable(items, count, cursor, -1);
-        } else if (c == 'j') {
+        } else if (action == ACTION_DOWN) {
             cursor = next_selectable(items, count, cursor, +1);
-        } else if (c == 27) {                  /* ESC sequence (arrow keys) */
-            char seq[2];
-            if (read(STDIN_FILENO, seq, 2) == 2 && seq[0] == '[') {
-                if (seq[1] == 'A')
-                    cursor = next_selectable(items, count, cursor, -1);
-                else if (seq[1] == 'B')
-                    cursor = next_selectable(items, count, cursor, +1);
-            }
         }
     }
 
+#ifdef _WIN32
+    if (hOut != INVALID_HANDLE_VALUE) {
+        SetConsoleMode(hOut, dwOriginalOutMode);
+    }
+    SetConsoleOutputCP(originalCP);
+#else
     tcsetattr(STDIN_FILENO, TCSANOW, &orig);
+#endif
+
     printf(ANSI_RESET ANSI_CLEAR_SCREEN ANSI_CURSOR_HOME ANSI_CURSOR_SHOW);
     fflush(stdout);
 
