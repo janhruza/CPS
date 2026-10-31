@@ -2,9 +2,6 @@
 // Created by jan on 10/21/26.
 //
 
-#ifndef PLUTUS_CORE_H
-#define PLUTUS_CORE_H
-
 #include "../inc/Core.h"
 #include <stdio.h>
 #include <stdint.h>
@@ -13,6 +10,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define INPUT_SIZE 64
 
@@ -136,4 +134,30 @@ void Pause(const char *msg) {
     WaitForEnter();
 }
 
-#endif //PLUTUS_CORE_H
+bool InitProgressBar(ProgressBar *pBar) {
+    if (pBar == nullptr) return false;
+    pBar->cFill = '#';
+    pBar->cBlank = '.';
+    pBar->bInitialized = true;
+    return true;
+}
+
+bool DrawProgress(const ProgressBar *pBar) {
+    if (pBar == nullptr) return false;
+    if (pBar->dMin > pBar->dMax) return false;
+    if (!pBar->bInitialized) return false;
+
+    printf("%s [", pBar->pszLabel);
+
+    // draw fraction
+    // example: min 10, max 20, width 20, value 17.6 => 7.6 / 10 => 76%
+    const double dFraction = (pBar->dValue - pBar->dMin) / (pBar->dMax - pBar->dMin);
+    const int iFilled = (int)llround(dFraction * pBar->uWidth);
+
+    for (int i = 0; i < pBar->uWidth; i++) {
+        putchar(i < iFilled ? '#' : '.');
+    }
+
+    printf("] %.0f%%", dFraction * 100.0);
+    return true;
+}
