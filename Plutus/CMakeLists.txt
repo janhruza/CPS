@@ -23,6 +23,7 @@ add_executable(Plutus main.c
         inc/Engine/Investment.h
         src/Engine/Investment.c
         inc/Engine/PlutusFile.h
-        src/Engine/PlutusFile.c)
+        src/Engine/PlutusFile.c
+        inc/Ansi.h)
 
 target_link_libraries(Plutus m) # libm math library
