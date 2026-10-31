@@ -20,21 +20,21 @@ bool MAMortgageCalculator(void) {
 
     puts("--- MORTGAGE CALCULATOR ---");
     printf("Home value: ");
-    scanf("%llu", &mortgage.llHomeValue);
+    mortgage.llHomeValue = ReadLongLong();
 
     int age = 0;
     printf("Age: ");
-    scanf("%d", &age);
+    age = ReadInt();
     mortgage.eDownPayment = age < 36 ? DOWN_PAY_LOW : DOWN_PAY_HIGH;
 
     double interest = 0;
     printf("Interest: ");
-    scanf("%lf", &interest);
+    interest = ReadDouble();
     mortgage.sLoan.dRate = interest;
 
     int term = 0;
     printf("Term (years): ");
-    scanf("%d", &term);
+    term = ReadInt();
     mortgage.sLoan.iTermMonths = term * 12;
 
     if (!MortgageCalculate(&mortgage)) {
@@ -48,6 +48,7 @@ bool MAMortgageCalculator(void) {
     printf("Total:           %llu\n", mortgage.sLoan.llTotal);
     printf("Monthly payment: %llu\n", mortgage.sLoan.llPayment);
     printf("Total interest:  %llu\n", mortgage.sLoan.llTotalInterest);
+    puts("--- END OF MORTGAGE CALCULATOR ---\n");
 
     Pause("Press enter to continue... ");
     return true;
