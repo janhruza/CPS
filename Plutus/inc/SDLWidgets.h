@@ -263,5 +263,12 @@ void WDrawProgressBar(SDL_Renderer *ren, SDL_Rect rect,
 void WDrawHelpStrip(SDL_Renderer *ren, int winW, int winH,
                     const char *pszText);
 
+/* ============================================================
+ *  Formatting helpers
+ * ============================================================ */
+
+/* Format a currency value compactly into buf, e.g. "$1.25M", "$50.0k", "$350" */
+void WFormatCurrency(double val, char *buf, size_t size);
+
 #endif /* PLUTUS_SDLWIDGETS_H */
 

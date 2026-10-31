@@ -18,14 +18,14 @@
  * ============================================================ */
 
 const SDL_Color g_wPalette[8] = {
-    WC_BLUE,
-    WC_GREEN,
-    WC_ORANGE,
-    WC_PURPLE,
-    WC_CYAN,
-    WC_YELLOW,
-    WC_RED,
-    WC_LIME,
+    {59,  130, 246, 255},
+    {52,  211, 153, 255},
+    {251, 146, 60,  255},
+    {167, 139, 250, 255},
+    {34,  211, 238, 255},
+    {251, 191, 36,  255},
+    {248, 113, 113, 255},
+    {163, 230, 53,  255},
 };
 
 /* ============================================================
@@ -488,5 +488,21 @@ void WDrawHelpStrip(SDL_Renderer *ren, int winW, int winH,
     WDrawLine(ren, 0, winH - h, winW, winH - h, WC_BORDER);
     if (pszText)
         FontDrawText(ren, 12, winH - h + 5, pszText, WC_TEXT_DIM, FONT_SM);
+}
+
+void WFormatCurrency(double val, char *buf, size_t size)
+{
+    if (!buf || size == 0) return;
+    double absVal = fabs(val);
+    const char *sign = (val < 0.0) ? "-" : "";
+    if (absVal >= 1e9) {
+        snprintf(buf, size, "%s$%.2lfB", sign, absVal / 1e9);
+    } else if (absVal >= 1e6) {
+        snprintf(buf, size, "%s$%.2lfM", sign, absVal / 1e6);
+    } else if (absVal >= 1e4) {
+        snprintf(buf, size, "%s$%.1lfk", sign, absVal / 1e3);
+    } else {
+        snprintf(buf, size, "%s$%.0lf", sign, absVal);
+    }
 }
 

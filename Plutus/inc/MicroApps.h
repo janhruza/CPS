@@ -14,5 +14,10 @@ bool MAInvestmentChart(void);
 bool MAMortgageChart(void);
 bool MALoanComparisonChart(void);
 bool MAExpenseReport(void);
+bool MANetWorthTimeline(void);
+bool MASavingsGoalChart(void);
+bool MABudgetWheel(void);
+bool MALoanPayoffRace(void);
+bool MAInflationErosionChart(void);
 
 #endif //PLUTUS_MICROAPPS_H
