@@ -6,6 +6,7 @@
  * Keys: Up/Down or k/j to move, Space to select, q to quit
  */
 #include "../inc/Menu.h"
+#include "../inc/Ansi.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -13,15 +14,14 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-/* ---------- Colors (24-bit, needs a truecolor terminal) ---------- */
+/* ---------- Palette (named here, built from the ANSI header) ---------- */
 
-#define COLOR_BORDER   "\x1b[38;2;60;110;200m"
-#define COLOR_TITLE    "\x1b[1m\x1b[38;2;176;96;0m"
-#define COLOR_HL_BG    "\x1b[48;2;40;110;220m"
-#define COLOR_HL_FG    "\x1b[38;2;255;255;255m"
-#define COLOR_NORMAL   "\x1b[39m"
-#define COLOR_DISABLED "\x1b[38;2;128;128;128m"
-#define COLOR_RESET    "\x1b[0m"
+#define MENU_BORDER    ANSI_FG_RGB(60, 110, 200)
+#define MENU_TITLE     ANSI_BOLD ANSI_FG_RGB(176, 96, 0)
+#define MENU_HL_BG     ANSI_BG_RGB(40, 110, 220)
+#define MENU_HL_FG     ANSI_FG_RGB(255, 255, 255)
+#define MENU_NORMAL    ANSI_FG_DEFAULT
+#define MENU_DISABLED  ANSI_FG_RGB(128, 128, 128)
 
 /* ---------- Box drawing characters (UTF-8) ---------- */
 
@@ -77,16 +77,16 @@ static void indent(int n)
 
 static void vbar(void)
 {
-    printf(COLOR_BORDER BOX_V COLOR_RESET);
+    printf(MENU_BORDER BOX_V ANSI_RESET);
 }
 
 /* Top, middle (separator), or bottom border line. */
 static void draw_rule(int m, int w, const char *left, const char *fill, const char *right)
 {
     indent(m);
-    printf(COLOR_BORDER "%s", left);
+    printf(MENU_BORDER "%s", left);
     repeat(fill, w);
-    printf("%s" COLOR_RESET "\r\n", right);
+    printf("%s" ANSI_RESET "\r\n", right);
 }
 
 /* A row of centered text inside the box, clipped to the inner width. */
@@ -100,7 +100,7 @@ static void draw_text_row(int m, int w, const char *color, const char *text)
 
     indent(m);
     vbar();
-    printf("%s%*s%.*s%*s" COLOR_RESET, color, left, "", len, text, right, "");
+    printf("%s%*s%.*s%*s" ANSI_RESET, color, left, "", len, text, right, "");
     vbar();
     printf("\r\n");
 }
@@ -128,11 +128,12 @@ void DrawMenu(const char *title, const MenuItem items[], int count, int cursor)
     int w = box_inner_width();
     int m = box_margin(w);
 
-    printf("\x1b[H\x1b[2J\x1b[?25l\r\n");   /* home, clear, hide cursor, top gap */
+    /* home, clear, hide cursor, top gap */
+    printf(ANSI_CURSOR_HOME ANSI_CLEAR_SCREEN ANSI_CURSOR_HIDE "\r\n");
 
     /* header: top border, title, rule under title */
     draw_rule(m, w, BOX_TL, BOX_H, BOX_TR);
-    draw_text_row(m, w, COLOR_TITLE, title ? title : "");
+    draw_text_row(m, w, MENU_TITLE, title ? title : "");
     draw_rule(m, w, BOX_LT, BOX_H, BOX_RT);
 
     /* body */
@@ -151,13 +152,13 @@ void DrawMenu(const char *title, const MenuItem items[], int count, int cursor)
         indent(m);
         vbar();
         if (i == cursor) {
-            printf(COLOR_HL_BG COLOR_HL_FG "  %.*s%*s" COLOR_RESET,
+            printf(MENU_HL_BG MENU_HL_FG "  %.*s%*s" ANSI_RESET,
                    len, items[i].label, pad, "");
         } else if (items[i].selectable) {
-            printf(COLOR_NORMAL "  %.*s%*s" COLOR_RESET,
+            printf(MENU_NORMAL "  %.*s%*s" ANSI_RESET,
                    len, items[i].label, pad, "");
         } else {
-            printf(COLOR_DISABLED "  %.*s%*s" COLOR_RESET,
+            printf(MENU_DISABLED "  %.*s%*s" ANSI_RESET,
                    len, items[i].label, pad, "");
         }
         vbar();
@@ -166,7 +167,7 @@ void DrawMenu(const char *title, const MenuItem items[], int count, int cursor)
 
     /* footer: rule, hint text, bottom border */
     draw_rule(m, w, BOX_LT, BOX_H, BOX_RT);
-    draw_text_row(m, w, COLOR_DISABLED, "Up/Down: move  Enter/Space: select  q: quit");
+    draw_text_row(m, w, MENU_DISABLED, "Up/Down: move  Enter/Space: select  q: quit");
     draw_rule(m, w, BOX_BL, BOX_H, BOX_BR);
 
     fflush(stdout);
@@ -220,7 +221,7 @@ int MenuSelect(const char *title, const MenuItem items[], int count)
     }
 
     tcsetattr(STDIN_FILENO, TCSANOW, &orig);
-    printf(COLOR_RESET "\x1b[2J\x1b[H\x1b[?25h");
+    printf(ANSI_RESET ANSI_CLEAR_SCREEN ANSI_CURSOR_HOME ANSI_CURSOR_SHOW);
     fflush(stdout);
 
     return result;
