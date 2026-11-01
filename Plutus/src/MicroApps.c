@@ -663,7 +663,7 @@ static inline bool SDLEvents(int *pMouseX, int *pMouseY)
 
 bool MAMortgageChart(void)
 {
-    puts("\n========================================");
+    puts("========================================");
     puts("   MORTGAGE AMORTISATION CHART (SDL)");
     puts("========================================");
 
@@ -966,7 +966,7 @@ bool MAMortgageChart(void)
 
 bool MALoanComparisonChart(void)
 {
-    puts("\n========================================");
+    puts("========================================");
     puts("   LOAN COMPARISON CHART (SDL)");
     puts("========================================");
     puts("Compare up to 4 loan scenarios (same principal, different rate/term).\n");
@@ -1191,7 +1191,7 @@ bool MALoanComparisonChart(void)
 
 bool MAExpenseReport(void)
 {
-    puts("\n========================================");
+    puts("========================================");
     puts("   EXPENSE REPORT CHART (SDL)");
     puts("========================================");
     puts("Enter transactions for the current month. Leave amount as 0 to stop.\n");
@@ -1489,7 +1489,7 @@ bool MAExpenseReport(void)
  *  Net worth trajectory with confidence bands (+/-2.5% return)
  * ============================================================ */
 bool MANetWorthTimeline(void) {
-    puts("\n========================================");
+    puts("========================================");
     puts("   NET WORTH & WEALTH ACCUMULATION");
     puts("========================================");
 
@@ -1698,7 +1698,7 @@ bool MANetWorthTimeline(void) {
  *  Target goal progress with compound growth
  * ============================================================ */
 bool MASavingsGoalChart(void) {
-    puts("\n========================================");
+    puts("========================================");
     puts("   SAVINGS GOAL ACCUMULATOR");
     puts("========================================");
 
@@ -1913,7 +1913,7 @@ bool MASavingsGoalChart(void) {
  *  Donut breakdown of monthly expenditures and savings surplus
  * ============================================================ */
 bool MABudgetWheel(void) {
-    puts("\n========================================");
+    puts("========================================");
     puts("   MONTHLY BUDGET ALLOCATION WHEEL");
     puts("========================================");
 
@@ -2092,7 +2092,7 @@ bool MABudgetWheel(void) {
  *  Horizontal comparison of extra-payment payoff lanes
  * ============================================================ */
 bool MALoanPayoffRace(void) {
-    puts("\n========================================");
+    puts("========================================");
     puts("   LOAN ACCELERATED PAYOFF RACE");
     puts("========================================");
 
@@ -2271,7 +2271,7 @@ bool MALoanPayoffRace(void) {
  *  Nominal vs real purchasing power decay over time
  * ============================================================ */
 bool MAInflationErosionChart(void) {
-    puts("\n========================================");
+    puts("========================================");
     puts("   PURCHASING POWER INFLATION EROSION");
     puts("========================================");
 
