@@ -143,7 +143,7 @@ bool MAExpenseTracker(void) {
 
     bool bExit = false;
     while (bExit == false) {
-        const char *filename = "ExpenseTracker.plutus";
+        const char *filename = "ExpenseTracker.plts";
         const MenuItem menus[] = {
                 (MenuItem){.id = ID_DASH, .label = "Dashboard", .selectable = tracker.uCount > 0 ? 1 : 0, .type = MENU_ITEM},
                 (MenuItem){.id = ID_HISTORY, .label = "History", .selectable = tracker.uCount > 0 ? 1 : 0, .type = MENU_ITEM},
@@ -780,7 +780,7 @@ bool MAMortgageChart(void)
         SDL_RenderClear(ren);
 
         /* Title */
-        DrawText(ren, padL, 18, "PLUTUS - MORTGAGE AMORTISATION SCHEDULE", cText, 2);
+        DrawText(ren, padL, 18, "MORTGAGE AMORTISATION SCHEDULE", cText, 2);
 
         char hdr[192];
         snprintf(hdr, sizeof(hdr),
@@ -1058,7 +1058,7 @@ bool MALoanComparisonChart(void)
         SDL_SetRenderDrawColor(ren, cBg.r, cBg.g, cBg.b, 255);
         SDL_RenderClear(ren);
 
-        DrawText(ren, padL, 18, "PLUTUS - LOAN SCENARIO COMPARISON", cText, 2);
+        DrawText(ren, padL, 18, "LOAN SCENARIO COMPARISON", cText, 2);
 
         char hdr[128];
         snprintf(hdr, sizeof(hdr), "Principal: $%lld  |  %d scenario%s",
@@ -1323,7 +1323,7 @@ bool MAExpenseReport(void)
         SDL_SetRenderDrawColor(ren, cBg.r, cBg.g, cBg.b, 255);
         SDL_RenderClear(ren);
 
-        DrawText(ren, padL, 18, "PLUTUS - EXPENSE REPORT", cText, 2);
+        DrawText(ren, padL, 18, "EXPENSE REPORT", cText, 2);
 
         char hdr[128];
         snprintf(hdr, sizeof(hdr),
