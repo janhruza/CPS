@@ -36,7 +36,9 @@ add_executable(Plutus main.c
         inc/Ansi.h
         inc/Font.h
         inc/SDLWidgets.h
-        src/SDLWidgets.c)
+        src/SDLWidgets.c
+        inc/SDLInput.h
+        src/SDLInput.c)
 
 target_include_directories(Plutus PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 

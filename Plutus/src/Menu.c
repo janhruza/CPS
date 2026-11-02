@@ -30,6 +30,11 @@
 #define MENU_HL_FG     ANSI_FG_RGB(255, 255, 255)
 #define MENU_NORMAL    ANSI_FG_DEFAULT
 #define MENU_DISABLED  ANSI_FG_RGB(128, 128, 128)
+/* Heading: coloured accent dot + slightly brighter text */
+#define MENU_HEADING_ACCENT ANSI_FG_RGB(96, 160, 255)
+#define MENU_HEADING_TEXT   ANSI_BOLD ANSI_FG_RGB(160, 200, 255)
+/* Note: dim italic (terminals that support italic render it; others just dim) */
+#define MENU_NOTE_TEXT      ANSI_DIM ANSI_ITALIC ANSI_FG_RGB(110, 110, 140)
 
 /* ---------- Box drawing characters (UTF-8) ---------- */
 
@@ -156,28 +161,79 @@ void DrawMenu(const char *title, const MenuItem items[], int count, int cursor)
 
     /* body */
     for (int i = 0; i < count; i++) {
-        if (items[i].type == MENU_SEPARATOR) {
+        const MenuItem *it = &items[i];
+
+        /* ── SEPARATOR ── */
+        if (it->type == MENU_SEPARATOR) {
             draw_rule(m, w, BOX_LT, BOX_H, BOX_RT);
             continue;
         }
 
-        int lim = w - 2;                       /* two spaces of left padding */
-        int len = (int)strlen(items[i].label);
-        if (len > lim)
-            len = lim;
-        int pad = w - 2 - len;
+        /* ── HEADING ──
+           Visual: │  ◆ LABEL ────────────────────────────  │
+           The trailing dashes fill to the right edge for a runway-style look. */
+        if (it->type == MENU_HEADING) {
+            const char *label = it->label ? it->label : "";
+            int llen = (int)strlen(label);
+            /* "  ◆ " prefix is 4 visible chars (◆ is 3 bytes but 1 column) */
+            int prefix_vis = 4;
+            /* trailing " ─ ... ─" filler — at least 1 dash */
+            int content_vis = prefix_vis + llen;
+            int trail = w - content_vis - 1; /* -1 for the space before dashes */
+            if (trail < 1) trail = 1;
+
+            indent(m);
+            vbar();
+            printf(MENU_HEADING_ACCENT "  \xE2\x97\x86 " /* ◆ */
+                   MENU_HEADING_TEXT "%.*s " ANSI_RESET
+                   MENU_HEADING_ACCENT,
+                   llen, label);
+            /* draw trailing dashes in accent colour */
+            repeat(BOX_H, trail);
+            printf(ANSI_RESET);
+            vbar();
+            printf("\r\n");
+            continue;
+        }
+
+        /* ── NOTE ──
+           Visual: │    ↳ hint text                         │  (dim, indented) */
+        if (it->type == MENU_NOTE) {
+            const char *label = it->label ? it->label : "";
+            /* "    \xe2\x86\xb3 " = 6 visible chars (↳ is 3 bytes, 1 col) */
+            int prefix_vis = 6;
+            int lim = w - prefix_vis;
+            int llen = (int)strlen(label);
+            if (llen > lim) llen = lim;
+            int pad = w - prefix_vis - llen;
+
+            indent(m);
+            vbar();
+            printf(MENU_NOTE_TEXT "    \xE2\x86\xB3 " /* ↳ */
+                   "%.*s%*s" ANSI_RESET,
+                   llen, label, pad, "");
+            vbar();
+            printf("\r\n");
+            continue;
+        }
+
+        /* ── ITEM (normal, highlighted, or disabled) ── */
+        int lim = w - 2;
+        int llen = (int)strlen(it->label ? it->label : "");
+        if (llen > lim) llen = lim;
+        int pad = w - 2 - llen;
 
         indent(m);
         vbar();
         if (i == cursor) {
             printf(MENU_HL_BG MENU_HL_FG "  %.*s%*s" ANSI_RESET,
-                   len, items[i].label, pad, "");
-        } else if (items[i].selectable) {
+                   llen, it->label, pad, "");
+        } else if (it->selectable) {
             printf(MENU_NORMAL "  %.*s%*s" ANSI_RESET,
-                   len, items[i].label, pad, "");
+                   llen, it->label, pad, "");
         } else {
             printf(MENU_DISABLED "  %.*s%*s" ANSI_RESET,
-                   len, items[i].label, pad, "");
+                   llen, it->label, pad, "");
         }
         vbar();
         printf("\r\n");

@@ -19,6 +19,7 @@
 #include "../inc/Engine/PlutusFile.h"
 #include "../inc/Font.h"
 #include "../inc/SDLWidgets.h"
+#include "../inc/SDLInput.h"
 
 bool MAMortgageCalculator(void) {
     Mortgage mortgage = {0};
@@ -284,25 +285,33 @@ static void FormatCurrency(double val, char *buf, size_t size) {
 }
 
 bool MAInvestmentChart(void) {
-    puts("========================================");
-    puts("   INVESTMENT CHART TEST (SDL)");
-    puts("========================================");
+    WISpinner spInitial, spContribution, spRate, spYears;
+    WIForm form;
+    WIFormInit(&form, 520, 390);
+    WIFormSetHeader(&form, "Investment Growth Calculator",
+                           "Enter parameters to model compound interest & growth");
 
-    printf("Initial investment amount ($): ");
-    const long long llInitial = ReadLongLong();
+    WIInitSpinner(&spInitial,      (SDL_Rect){40,  95, 440, 32}, "Initial Investment Amount ($)", 10000.0, 0.0, 100000000.0, 1000.0, 0);
+    WIInitSpinner(&spContribution, (SDL_Rect){40, 155, 440, 32}, "Monthly Contribution ($)",       500.0, 0.0,   10000000.0,   50.0, 0);
+    WIInitSpinner(&spRate,         (SDL_Rect){40, 215, 440, 32}, "Annual Return Rate (%)",           8.0, 0.0,        100.0,    0.5, 2);
+    WIInitSpinner(&spYears,        (SDL_Rect){40, 275, 440, 32}, "Investment Term (Years)",         20.0, 1.0,         60.0,    1.0, 0);
 
-    printf("Monthly contribution ($): ");
-    const long long llContribution = ReadLongLong();
+    WIFormAdd(&form, WI_KIND_SPINNER, &spInitial,      1);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spContribution, 2);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spRate,         3);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spYears,        4);
 
-    printf("Annual return rate (e.g. 0.08 for 8%%): ");
-    const double dRate = ReadDouble();
+    if (!WIFormRunModal(&form, NULL, NULL, "Investment Growth Parameters", 520, 390)) {
+        return false;
+    }
 
-    printf("Investment term in years: ");
-    const int iYears = ReadInt();
+    const long long llInitial      = (long long)spInitial.dValue;
+    const long long llContribution = (long long)spContribution.dValue;
+    const double dRate             = spRate.dValue / 100.0;
+    const int iYears               = (int)spYears.dValue;
 
     if (llInitial < 0 || llContribution < 0 || dRate < 0.0 || iYears <= 0) {
         fprintf(stderr, "Invalid investment parameters.\n");
-        Pause("Press enter to continue... ");
         return false;
     }
 
@@ -316,7 +325,6 @@ bool MAInvestmentChart(void) {
 
     if (!InvestmentCalculate(&inv)) {
         fprintf(stderr, "Calculation failed.\n");
-        Pause("Press enter to continue... ");
         return false;
     }
 
@@ -663,22 +671,30 @@ static inline bool SDLEvents(int *pMouseX, int *pMouseY)
 
 bool MAMortgageChart(void)
 {
-    puts("========================================");
-    puts("   MORTGAGE AMORTISATION CHART (SDL)");
-    puts("========================================");
+    WISpinner spPrincipal, spRate, spYears;
+    WIForm form;
+    WIFormInit(&form, 520, 340);
+    WIFormSetHeader(&form, "Mortgage Amortisation Parameters",
+                           "Configure loan principal, interest rate, and term");
 
-    printf("Loan principal ($): ");
-    const long long llPrincipal = ReadLongLong();
+    WIInitSpinner(&spPrincipal, (SDL_Rect){40,  95, 440, 32}, "Loan Principal ($)",   350000.0, 1000.0, 100000000.0, 10000.0, 0);
+    WIInitSpinner(&spRate,      (SDL_Rect){40, 155, 440, 32}, "Annual Interest Rate (%)",  4.5,    0.1,         30.0,    0.25, 2);
+    WIInitSpinner(&spYears,     (SDL_Rect){40, 215, 440, 32}, "Term (Years)",             30.0,    1.0,         50.0,    1.0,  0);
 
-    printf("Annual interest rate (e.g. 0.045 for 4.5%%): ");
-    const double dRate = ReadDouble();
+    WIFormAdd(&form, WI_KIND_SPINNER, &spPrincipal, 1);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spRate,      2);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spYears,     3);
 
-    printf("Term (years): ");
-    const int iYears = ReadInt();
+    if (!WIFormRunModal(&form, NULL, NULL, "Mortgage Parameters", 520, 340)) {
+        return false;
+    }
+
+    const long long llPrincipal = (long long)spPrincipal.dValue;
+    const double dRate          = spRate.dValue / 100.0;
+    const int iYears            = (int)spYears.dValue;
 
     if (llPrincipal <= 0 || dRate < 0.0 || iYears <= 0) {
         fputs("Invalid parameters.\n", stderr);
-        Pause("Press enter to continue... ");
         return false;
     }
 
@@ -691,7 +707,6 @@ bool MAMortgageChart(void)
 
     if (!LoanCalculate(&loan)) {
         fputs("Loan calculation failed.\n", stderr);
-        Pause("Press enter to continue... ");
         return false;
     }
 
@@ -966,33 +981,46 @@ bool MAMortgageChart(void)
 
 bool MALoanComparisonChart(void)
 {
-    puts("========================================");
-    puts("   LOAN COMPARISON CHART (SDL)");
-    puts("========================================");
-    puts("Compare up to 4 loan scenarios (same principal, different rate/term).\n");
+    WISpinner spPrincipal;
+    WISpinner spRate[3], spYears[3];
+    WIForm form;
+    WIFormInit(&form, 580, 390);
+    WIFormSetHeader(&form, "Loan Scenarios Comparison",
+                           "Compare 3 loan options with identical principal side by side");
 
-    printf("Loan principal ($): ");
-    const long long llPrincipal = ReadLongLong();
-    if (llPrincipal <= 0) {
-        fputs("Invalid principal.\n", stderr);
-        Pause("Press enter to continue... ");
+    WIInitSpinner(&spPrincipal, (SDL_Rect){40, 90, 500, 32}, "Loan Principal ($)", 300000.0, 1000.0, 100000000.0, 10000.0, 0);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spPrincipal, 1);
+
+    double defaultRates[3] = { 4.5, 5.5, 6.5 };
+    double defaultYears[3] = { 15.0, 30.0, 30.0 };
+    const char *rateLabels[3] = { "Scen 1 Rate (%)", "Scen 2 Rate (%)", "Scen 3 Rate (%)" };
+    const char *yearLabels[3] = { "Scen 1 Term (Years)", "Scen 2 Term (Years)", "Scen 3 Term (Years)" };
+
+    for (int i = 0; i < 3; i++) {
+        int y = 150 + i * 58;
+        WIInitSpinner(&spRate[i],  (SDL_Rect){40,  y, 240, 32}, rateLabels[i], defaultRates[i], 0.1, 30.0, 0.25, 2);
+        WIInitSpinner(&spYears[i], (SDL_Rect){300, y, 240, 32}, yearLabels[i], defaultYears[i], 1.0, 50.0, 1.0,  0);
+        WIFormAdd(&form, WI_KIND_SPINNER, &spRate[i],  2 + i * 2);
+        WIFormAdd(&form, WI_KIND_SPINNER, &spYears[i], 3 + i * 2);
+    }
+
+    if (!WIFormRunModal(&form, NULL, NULL, "Loan Comparison Parameters", 580, 390)) {
         return false;
     }
 
-    printf("Number of scenarios to compare (1-%d): ", MAX_SCENARIOS);
-    int nScen = ReadInt();
-    if (nScen < 1) nScen = 1;
-    if (nScen > MAX_SCENARIOS) nScen = MAX_SCENARIOS;
+    const long long llPrincipal = (long long)spPrincipal.dValue;
+    if (llPrincipal <= 0) {
+        fputs("Invalid principal.\n", stderr);
+        return false;
+    }
 
+    const int nScen = 3;
     Loan loans[MAX_SCENARIOS];
     char labels[MAX_SCENARIOS][32];
 
     for (int s = 0; s < nScen; s++) {
-        printf("\n--- Scenario %d ---\n", s + 1);
-        printf("Annual interest rate (e.g. 0.045 for 4.5%%): ");
-        const double rate = ReadDouble();
-        printf("Term (years): ");
-        const int years = ReadInt();
+        const double rate = spRate[s].dValue / 100.0;
+        const int years   = (int)spYears[s].dValue;
 
         loans[s] = (Loan){
             .llPrincipal     = llPrincipal,
@@ -1004,7 +1032,6 @@ bool MALoanComparisonChart(void)
 
         if (!LoanCalculate(&loans[s])) {
             fprintf(stderr, "Scenario %d calculation failed.\n", s + 1);
-            Pause("Press enter to continue... ");
             return false;
         }
         printf("  Monthly payment: $%lld  |  Total cost: $%lld  |  Interest: $%lld\n",
@@ -1191,16 +1218,66 @@ bool MALoanComparisonChart(void)
 
 bool MAExpenseReport(void)
 {
-    puts("========================================");
-    puts("   EXPENSE REPORT CHART (SDL)");
-    puts("========================================");
-    puts("Enter transactions for the current month. Leave amount as 0 to stop.\n");
+    WISpinner spIncome;
+    WISpinner spCats[6];
+    WIForm form;
+    WIFormInit(&form, 600, 390);
+    WIFormSetHeader(&form, "Monthly Expense Breakdown",
+                           "Enter your monthly income and category expenditures");
 
-    /* Use a fixed-size buffer for simplicity */
-    const int MAX_TR = 512;
+    WIInitSpinner(&spIncome, (SDL_Rect){40, 90, 520, 32}, "Monthly Income ($)", 5000.0, 0.0, 10000000.0, 250.0, 0);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spIncome, 1);
+
+    static const char *const CAT_NAMES[6] = {
+        "Housing ($)", "Food & Dining ($)", "Transportation ($)",
+        "Health & Medical ($)", "Entertainment ($)", "Shopping & Misc ($)"
+    };
+    static const uint8_t CAT_IDS[6] = { 1, 2, 3, 4, 5, 7 };
+    double defaultVals[6] = { 1400.0, 650.0, 350.0, 250.0, 300.0, 350.0 };
+
+    for (int i = 0; i < 6; i++) {
+        int x = (i < 3) ? 40 : 315;
+        int y = 150 + (i % 3) * 58;
+        WIInitSpinner(&spCats[i], (SDL_Rect){x, y, 245, 32}, CAT_NAMES[i], defaultVals[i], 0.0, 10000000.0, 25.0, 0);
+        WIFormAdd(&form, WI_KIND_SPINNER, &spCats[i], 2 + i);
+    }
+
+    if (!WIFormRunModal(&form, NULL, NULL, "Expense Report Parameters", 600, 390)) {
+        return false;
+    }
+
+    /* Use a fixed-size buffer for transactions */
+    const int MAX_TR = 64;
     Transaction *trs = calloc((size_t)MAX_TR, sizeof(Transaction));
     if (!trs) {
         fputs("Memory error.\n", stderr);
+        return false;
+    }
+
+    int count = 0;
+    if (spIncome.dValue > 0.0) {
+        trs[count++] = (Transaction){
+            .uId       = 1,
+            .dValue    = spIncome.dValue,
+            .uDate     = 20261031,
+            .uType     = TRANSACTION_INCOME,
+            .eCategory = 0
+        };
+    }
+    for (int i = 0; i < 6; i++) {
+        if (spCats[i].dValue > 0.0) {
+            trs[count++] = (Transaction){
+                .uId       = (uint64_t)(count + 1),
+                .dValue    = spCats[i].dValue,
+                .uDate     = 20261031,
+                .uType     = TRANSACTION_EXPENSE,
+                .eCategory = CAT_IDS[i]
+            };
+        }
+    }
+
+    if (count == 0) {
+        free(trs);
         return false;
     }
 
@@ -1210,45 +1287,6 @@ bool MAExpenseReport(void)
         "Health", "Entertainment", "Savings", "Shopping"
     };
     const int NCAT = 8;
-
-    int count = 0;
-    uint64_t nextId = 1;
-
-    while (count < MAX_TR) {
-        printf("[%d] Type (1=Income, 2=Expense, 0=Done): ", count + 1);
-        int ttype = ReadInt();
-        if (ttype == 0) break;
-        if (ttype != 1 && ttype != 2) { puts("  Invalid type."); continue; }
-
-        printf("     Amount ($, >0): ");
-        double val = ReadDouble();
-        if (val <= 0.0) break;
-
-        int cat = 0;
-        if (ttype == 2) {
-            printf("     Category: ");
-            for (int i = 0; i < NCAT; i++) printf("%d=%s ", i, CATS[i]);
-            printf("\n     Choice: ");
-            cat = ReadInt();
-            if (cat < 0 || cat >= NCAT) cat = 0;
-        }
-
-        trs[count] = (Transaction){
-            .uId       = nextId++,
-            .dValue    = val,
-            .uDate     = 20261031, /* fixed demo date */
-            .uType     = (uint8_t)(ttype == 1 ? TRANSACTION_INCOME : TRANSACTION_EXPENSE),
-            .eCategory = (uint8_t)cat
-        };
-        count++;
-    }
-
-    if (count == 0) {
-        puts("No transactions entered.");
-        Pause("Press enter to continue... ");
-        free(trs);
-        return false;
-    }
 
     /* Aggregate: total income, total expense, per-category expenses */
     double totalIncome = 0.0, totalExpense = 0.0;
@@ -1489,28 +1527,36 @@ bool MAExpenseReport(void)
  *  Net worth trajectory with confidence bands (+/-2.5% return)
  * ============================================================ */
 bool MANetWorthTimeline(void) {
-    puts("========================================");
-    puts("   NET WORTH & WEALTH ACCUMULATION");
-    puts("========================================");
+    WISpinner spAssets, spDebt, spSavings, spRate, spYears;
+    WIForm form;
+    WIFormInit(&form, 520, 440);
+    WIFormSetHeader(&form, "Net Worth Projection Parameters",
+                           "Model wealth accumulation, assets, debt, and returns");
 
-    printf("Current Total Assets ($): ");
-    const double dAssets = ReadDouble();
+    WIInitSpinner(&spAssets,  (SDL_Rect){40,  90, 440, 32}, "Current Total Assets ($)",           150000.0, 0.0, 1000000000.0, 5000.0, 0);
+    WIInitSpinner(&spDebt,    (SDL_Rect){40, 150, 440, 32}, "Current Total Liabilities/Debt ($)",  40000.0, 0.0, 1000000000.0, 2500.0, 0);
+    WIInitSpinner(&spSavings, (SDL_Rect){40, 210, 440, 32}, "Monthly Net Savings / Additions ($)", 1200.0, 0.0,   10000000.0,  100.0, 0);
+    WIInitSpinner(&spRate,    (SDL_Rect){40, 270, 440, 32}, "Expected Annual Return (%)",            7.0,  0.0,        100.0,    0.5, 2);
+    WIInitSpinner(&spYears,   (SDL_Rect){40, 330, 440, 32}, "Projection Horizon (Years)",           25.0,  1.0,         60.0,    1.0, 0);
 
-    printf("Current Total Debt / Liabilities ($): ");
-    const double dDebt = ReadDouble();
+    WIFormAdd(&form, WI_KIND_SPINNER, &spAssets,  1);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spDebt,    2);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spSavings, 3);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spRate,    4);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spYears,   5);
 
-    printf("Monthly Net Savings / Investments ($): ");
-    const double dMonthlySavings = ReadDouble();
+    if (!WIFormRunModal(&form, NULL, NULL, "Net Worth Parameters", 520, 440)) {
+        return false;
+    }
 
-    printf("Expected Annual Return (e.g. 0.07 for 7%%): ");
-    const double dRate = ReadDouble();
-
-    printf("Projection Horizon (years): ");
-    const int iYears = ReadInt();
+    const double dAssets         = spAssets.dValue;
+    const double dDebt           = spDebt.dValue;
+    const double dMonthlySavings = spSavings.dValue;
+    const double dRate           = spRate.dValue / 100.0;
+    const int iYears             = (int)spYears.dValue;
 
     if (dAssets < 0 || dDebt < 0 || dMonthlySavings < 0 || dRate < 0.0 || iYears <= 0) {
         fprintf(stderr, "Invalid net worth projection parameters.\n");
-        Pause("Press enter to continue... ");
         return false;
     }
 
@@ -1698,25 +1744,33 @@ bool MANetWorthTimeline(void) {
  *  Target goal progress with compound growth
  * ============================================================ */
 bool MASavingsGoalChart(void) {
-    puts("========================================");
-    puts("   SAVINGS GOAL ACCUMULATOR");
-    puts("========================================");
+    WISpinner spGoal, spInitial, spMonthly, spRate;
+    WIForm form;
+    WIFormInit(&form, 520, 390);
+    WIFormSetHeader(&form, "Savings Goal Accumulator",
+                           "Configure target goal, starting balance, and deposits");
 
-    printf("Target Savings Goal ($): ");
-    const double dGoal = ReadDouble();
+    WIInitSpinner(&spGoal,    (SDL_Rect){40,  95, 440, 32}, "Target Savings Goal ($)",       100000.0, 100.0, 1000000000.0, 5000.0, 0);
+    WIInitSpinner(&spInitial, (SDL_Rect){40, 155, 440, 32}, "Initial Balance ($)",            10000.0,   0.0, 1000000000.0, 1000.0, 0);
+    WIInitSpinner(&spMonthly, (SDL_Rect){40, 215, 440, 32}, "Monthly Contribution ($)",        750.0,   0.0,   10000000.0,   50.0, 0);
+    WIInitSpinner(&spRate,    (SDL_Rect){40, 275, 440, 32}, "Annual Return Rate (%)",           6.0,   0.0,        100.0,    0.5, 2);
 
-    printf("Initial Savings ($): ");
-    const double dInitial = ReadDouble();
+    WIFormAdd(&form, WI_KIND_SPINNER, &spGoal,    1);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spInitial, 2);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spMonthly, 3);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spRate,    4);
 
-    printf("Monthly Contribution ($): ");
-    const double dMonthly = ReadDouble();
+    if (!WIFormRunModal(&form, NULL, NULL, "Savings Goal Parameters", 520, 390)) {
+        return false;
+    }
 
-    printf("Annual Return Rate (e.g. 0.06 for 6%%): ");
-    const double dRate = ReadDouble();
+    const double dGoal    = spGoal.dValue;
+    const double dInitial = spInitial.dValue;
+    const double dMonthly = spMonthly.dValue;
+    const double dRate    = spRate.dValue / 100.0;
 
     if (dGoal <= 0.0 || dInitial < 0.0 || dMonthly < 0.0 || dRate < 0.0) {
         fprintf(stderr, "Invalid savings goal parameters.\n");
-        Pause("Press enter to continue... ");
         return false;
     }
 
@@ -1913,35 +1967,50 @@ bool MASavingsGoalChart(void) {
  *  Donut breakdown of monthly expenditures and savings surplus
  * ============================================================ */
 bool MABudgetWheel(void) {
-    puts("========================================");
-    puts("   MONTHLY BUDGET ALLOCATION WHEEL");
-    puts("========================================");
+    WISpinner spIncome;
+    WISpinner spCats[8];
+    WIForm form;
+    WIFormInit(&form, 600, 440);
+    WIFormSetHeader(&form, "Monthly Budget Allocation Wheel",
+                           "Enter your net income and planned expense allocation");
 
-    printf("Monthly Net Income ($): ");
-    const double dIncome = ReadDouble();
-    if (dIncome <= 0.0) {
-        fprintf(stderr, "Income must be positive.\n");
-        Pause("Press enter to continue... ");
+    WIInitSpinner(&spIncome, (SDL_Rect){40, 85, 520, 32}, "Monthly Net Income ($)", 5000.0, 100.0, 10000000.0, 250.0, 0);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spIncome, 1);
+
+    const char *catNames[8] = {
+        "Housing / Rent ($)",
+        "Food & Groceries ($)",
+        "Transportation ($)",
+        "Utilities & Bills ($)",
+        "Health & Ins. ($)",
+        "Dining & Lifestyle ($)",
+        "Debt & Loans ($)",
+        "Personal & Misc ($)"
+    };
+    double defaultAmounts[8] = { 1500.0, 600.0, 400.0, 300.0, 250.0, 350.0, 300.0, 200.0 };
+
+    for (int i = 0; i < 8; i++) {
+        int col = i % 2;
+        int row = i / 2;
+        int x = (col == 0) ? 40 : 310;
+        int y = 145 + row * 56;
+        WIInitSpinner(&spCats[i], (SDL_Rect){x, y, 250, 30}, catNames[i], defaultAmounts[i], 0.0, 10000000.0, 25.0, 0);
+        WIFormAdd(&form, WI_KIND_SPINNER, &spCats[i], 2 + i);
+    }
+
+    if (!WIFormRunModal(&form, NULL, NULL, "Budget Allocation Parameters", 600, 440)) {
         return false;
     }
 
-    const char *catNames[8] = {
-        "Housing / Rent",
-        "Food & Groceries",
-        "Transportation",
-        "Utilities & Bills",
-        "Health & Insurance",
-        "Dining & Lifestyle",
-        "Debt & Loans",
-        "Personal & Misc"
-    };
+    const double dIncome = spIncome.dValue;
+    if (dIncome <= 0.0) {
+        fprintf(stderr, "Income must be positive.\n");
+        return false;
+    }
 
     double catAmounts[8] = {0};
-    puts("\nEnter amounts for each budget category (0 is allowed):");
     for (int i = 0; i < 8; i++) {
-        printf("  %-20s ($): ", catNames[i]);
-        catAmounts[i] = ReadDouble();
-        if (catAmounts[i] < 0.0) catAmounts[i] = 0.0;
+        catAmounts[i] = spCats[i].dValue;
     }
 
     double totalExpenses = 0.0;
@@ -2092,22 +2161,39 @@ bool MABudgetWheel(void) {
  *  Horizontal comparison of extra-payment payoff lanes
  * ============================================================ */
 bool MALoanPayoffRace(void) {
-    puts("========================================");
-    puts("   LOAN ACCELERATED PAYOFF RACE");
-    puts("========================================");
+    WISpinner spPrincipal, spRate, spYears, spExA, spExB, spExC;
+    WIForm form;
+    WIFormInit(&form, 560, 370);
+    WIFormSetHeader(&form, "Accelerated Loan Payoff Race",
+                           "Compare standard schedule vs 3 extra monthly payment options");
 
-    printf("Loan Principal ($): ");
-    const long long llPrincipal = ReadLongLong();
+    WIInitSpinner(&spPrincipal, (SDL_Rect){40,  90, 230, 32}, "Loan Principal ($)",   250000.0, 1000.0, 100000000.0, 10000.0, 0);
+    WIInitSpinner(&spRate,      (SDL_Rect){290, 90, 230, 32}, "Interest Rate (%)",         6.0,    0.1,         30.0,    0.25, 2);
+    WIInitSpinner(&spYears,     (SDL_Rect){40, 150, 230, 32}, "Standard Term (Years)",    30.0,    1.0,         50.0,    1.0,  0);
+    WIInitSpinner(&spExA,       (SDL_Rect){290,150, 230, 32}, "Extra Option A ($/mo)",   100.0,    0.0,     100000.0,   25.0,  0);
+    WIInitSpinner(&spExB,       (SDL_Rect){40, 210, 230, 32}, "Extra Option B ($/mo)",   250.0,    0.0,     100000.0,   25.0,  0);
+    WIInitSpinner(&spExC,       (SDL_Rect){290,210, 230, 32}, "Extra Option C ($/mo)",   500.0,    0.0,     100000.0,   50.0,  0);
 
-    printf("Annual Interest Rate (e.g. 0.06 for 6%%): ");
-    const double dRate = ReadDouble();
+    WIFormAdd(&form, WI_KIND_SPINNER, &spPrincipal, 1);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spRate,      2);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spYears,     3);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spExA,       4);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spExB,       5);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spExC,       6);
 
-    printf("Standard Term (years): ");
-    const int iYears = ReadInt();
+    if (!WIFormRunModal(&form, NULL, NULL, "Loan Payoff Race Parameters", 560, 370)) {
+        return false;
+    }
+
+    const long long llPrincipal = (long long)spPrincipal.dValue;
+    const double dRate          = spRate.dValue / 100.0;
+    const int iYears            = (int)spYears.dValue;
+    long long exA               = (long long)spExA.dValue;
+    long long exB               = (long long)spExB.dValue;
+    long long exC               = (long long)spExC.dValue;
 
     if (llPrincipal <= 0 || dRate < 0.0 || iYears <= 0) {
         fprintf(stderr, "Invalid loan parameters.\n");
-        Pause("Press enter to continue... ");
         return false;
     }
 
@@ -2119,18 +2205,10 @@ bool MALoanPayoffRace(void) {
     };
     if (!LoanCalculate(&baseLoan)) {
         fprintf(stderr, "Loan calculation error.\n");
-        Pause("Press enter to continue... ");
         return false;
     }
 
     printf("Standard Monthly Payment: $%lld\n", baseLoan.llPayment);
-    printf("\nEnter 3 extra monthly payment options to compare:\n");
-    printf("  Option A extra ($/mo) [e.g. 100]: ");
-    long long exA = ReadLongLong();
-    printf("  Option B extra ($/mo) [e.g. 250]: ");
-    long long exB = ReadLongLong();
-    printf("  Option C extra ($/mo) [e.g. 500]: ");
-    long long exC = ReadLongLong();
 
     long long extras[4] = { 0, exA > 0 ? exA : 100, exB > 0 ? exB : 250, exC > 0 ? exC : 500 };
     const char *laneNames[4] = {
@@ -2271,22 +2349,30 @@ bool MALoanPayoffRace(void) {
  *  Nominal vs real purchasing power decay over time
  * ============================================================ */
 bool MAInflationErosionChart(void) {
-    puts("========================================");
-    puts("   PURCHASING POWER INFLATION EROSION");
-    puts("========================================");
+    WISpinner spCapital, spInflation, spYears;
+    WIForm form;
+    WIFormInit(&form, 520, 340);
+    WIFormSetHeader(&form, "Inflation Erosion Parameters",
+                           "Model purchasing power decay over time due to inflation");
 
-    printf("Initial Capital / Cash Amount ($): ");
-    const double dCapital = ReadDouble();
+    WIInitSpinner(&spCapital,   (SDL_Rect){40,  95, 440, 32}, "Initial Capital / Cash ($)", 100000.0, 100.0, 1000000000.0, 5000.0, 0);
+    WIInitSpinner(&spInflation, (SDL_Rect){40, 155, 440, 32}, "Annual Inflation Rate (%)",      3.5,   0.0,        100.0,   0.25, 2);
+    WIInitSpinner(&spYears,     (SDL_Rect){40, 215, 440, 32}, "Time Horizon (Years)",          25.0,   1.0,         60.0,    1.0, 0);
 
-    printf("Expected Annual Inflation (e.g. 0.035 for 3.5%%): ");
-    const double dInflation = ReadDouble();
+    WIFormAdd(&form, WI_KIND_SPINNER, &spCapital,   1);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spInflation, 2);
+    WIFormAdd(&form, WI_KIND_SPINNER, &spYears,     3);
 
-    printf("Time Horizon in Years (e.g. 25): ");
-    const int iYears = ReadInt();
+    if (!WIFormRunModal(&form, NULL, NULL, "Inflation Erosion Parameters", 520, 340)) {
+        return false;
+    }
+
+    const double dCapital   = spCapital.dValue;
+    const double dInflation = spInflation.dValue / 100.0;
+    const int iYears        = (int)spYears.dValue;
 
     if (dCapital <= 0.0 || dInflation <= 0.0 || iYears <= 0) {
         fprintf(stderr, "Invalid inflation erosion parameters.\n");
-        Pause("Press enter to continue... ");
         return false;
     }
 

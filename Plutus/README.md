@@ -107,9 +107,20 @@ vcpkg install sdl2:x64-windows
    ```bash
    ./build/Plutus
    ```
-   *Direct shortcut to launch Investment Growth Chart:*
+
+   **Direct Command-Line Execution (for scripts & external apps):**
+   *Each command immediately opens an SDL modal window to adjust parameters, then displays the interactive chart:*
    ```bash
-   ./build/Plutus --chart
+   ./build/Plutus --investment      # Investment growth & compound interest
+   ./build/Plutus --mortgage        # Mortgage amortisation & equity breakdown
+   ./build/Plutus --loan-compare    # Compare 3 loan scenarios side-by-side
+   ./build/Plutus --expense-report  # Monthly categorized expense breakdown
+   ./build/Plutus --net-worth       # Long-term net worth & wealth projection
+   ./build/Plutus --savings-goal    # Target savings milestone accumulator
+   ./build/Plutus --budget-wheel    # Monthly budget allocation donut wheel
+   ./build/Plutus --loan-race       # Accelerated extra-payment loan payoff race
+   ./build/Plutus --inflation       # Purchasing power erosion over time
+   ./build/Plutus --help            # List all CLI options
    ```
 
 ---
@@ -158,12 +169,21 @@ vcpkg install sdl2:x64-windows
 | `Enter` / `Space` | Select menu option |
 | `q` / `ESC` | Exit program / return to menu |
 
+### SDL Parameter Input Windows
+| Control | Action |
+|---|---|
+| `Tab` / `Shift+Tab` | Cycle focus between fields and buttons |
+| `↑` / `↓` | Increment / decrement spinner value |
+| `Typing` / `Backspace` | Edit numeric value directly in any focused input field |
+| `Enter` / Click `OK` | Submit parameters and launch the graphical chart |
+| `ESC` / Click `Cancel` | Cancel and close |
+
 ### SDL Chart Windows
 | Control | Action |
 |---|---|
 | `Mouse Hover` | Inspect timeline data point with crosshair and dynamic tooltip |
 | `Window Resize` | Automatically recomputes responsive chart layout and grids |
-| `ESC` / `q` | Close chart window and return to terminal menu |
+| `ESC` / `q` | Close chart window and return to terminal menu (or exit) |
 
 ---
 
@@ -174,7 +194,7 @@ Plutus/
 ├── CMakeLists.txt              # CMake build configuration
 ├── README.md                   # Project documentation
 ├── LICENSE.md                  # MIT license
-├── main.c                      # Application entry point & TUI menu loop
+├── main.c                      # CLI dispatcher & TUI menu loop
 ├── inc/                        # Header declarations
 │   ├── Ansi.h                  # ANSI terminal formatting macros
 │   ├── Config.h                # App configuration file structures
@@ -182,6 +202,7 @@ Plutus/
 │   ├── Font.h                  # Embedded Cascadia Code bitmap typography (4 sizes)
 │   ├── Menu.h                  # Portable cross-platform TUI menu component
 │   ├── MicroApps.h             # High-level calculator & chart declarations
+│   ├── SDLInput.h              # Retained-mode SDL2 input toolkit (forms, spinners, buttons)
 │   ├── SDLWidgets.h            # Reusable dark-mode SDL2 chart primitives
 │   └── Engine/                 # Core financial engine modules
 │       ├── ExpenseTracker.h    # Transaction journal structures & balance math
@@ -194,7 +215,8 @@ Plutus/
     ├── Config.c
     ├── Core.c
     ├── Menu.c                  # Windows (conio) & Linux (termios) input driver
-    ├── MicroApps.c             # TUI applications & SDL graphical chart tests
+    ├── MicroApps.c             # Micro-app workflows & SDL parameter dialogs
+    ├── SDLInput.c              # GUI widget toolkit implementation
     ├── SDLWidgets.c            # SDL chart rendering engine & widget primitives
     └── Engine/
         ├── ExpenseTracker.c
