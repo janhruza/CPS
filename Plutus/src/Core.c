@@ -1,5 +1,5 @@
 //
-// Created by jan on 10/21/26.
+// Created on 10/21/26.
 //
 
 #include "../inc/Core.h"

@@ -1,5 +1,5 @@
 //
-// Created by jan on 10/18/26.
+// Created on 10/18/26.
 //
 
 #ifndef PLUTUS_EXPENSETRACKER_H

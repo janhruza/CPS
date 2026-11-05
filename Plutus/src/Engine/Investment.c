@@ -1,5 +1,5 @@
 //
-// Created by jan on 10/23/26.
+// Created on 10/23/26.
 //
 
 #include <math.h>

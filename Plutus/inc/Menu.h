@@ -1,5 +1,5 @@
 //
-// Created by jan on 10/19/26.
+// Created on 10/19/26.
 //
 
 #ifndef PLUTUS_MENU_H

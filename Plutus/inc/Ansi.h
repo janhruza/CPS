@@ -1,5 +1,5 @@
 //
-// Created by jan on 10/31/26.
+// Created on 10/31/26.
 //
 
 #ifndef PLUTUS_ANSI_H

@@ -1,5 +1,5 @@
 //
-// Created by jan on 10/31/26.
+// Created on 10/31/26.
 // SDLWidgets.c - Implementation of reusable SDL2 chart primitives.
 //
 

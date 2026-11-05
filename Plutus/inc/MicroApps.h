@@ -1,5 +1,5 @@
 //
-// Created by jan on 10/18/26.
+// Created on 10/18/26.
 // MicroApps.h - Defines small programs that utilizes the core engine.
 // Serves as a testing sandbox.
 //

@@ -1,5 +1,5 @@
 //
-// Created by jan on 11/02/26.
+// Created on 11/02/26.
 // SDLInput.h  –  SDL2 interactive input widget toolkit for Plutus chart windows.
 //
 // PURPOSE

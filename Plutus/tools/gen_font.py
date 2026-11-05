@@ -8,7 +8,7 @@ Fonts baked:
   LG   – Inter 20pt  → target cell 12×24
   MONO – SF Mono / Cascadia Code Regular 11pt → target cell 7×14
 
-Output: /home/jan/CLionProjects/CPS/Plutus/inc/Font.h
+Output: inc/Font.h (relative to project root)
 """
 
 import math
@@ -253,6 +253,11 @@ def emit_header(results):
         a(f"    {{ {r['cw']:2d}, {r['ch']:2d}, {r['bytes_per_row']} }},  /* FONT_{r['name']} */")
     a("};")
     a("")
+    a("static inline FontMetrics FontMetricsFor(FontSize size) {")
+    a("    if ((int)size < 0 || (int)size >= 4) return g_fontMetrics[0];")
+    a("    return g_fontMetrics[(int)size];")
+    a("}")
+    a("")
 
     # Emit glyph arrays
     for r in results:
@@ -329,10 +334,35 @@ def emit_header(results):
     a("static inline int FontDrawText(SDL_Renderer *ren, int x, int y, const char *s,")
     a("                               SDL_Color col, FontSize size)")
     a("{")
+    a("    if (!s) return x;")
+    a("    int curX = x;")
+    a("    int startX = x;")
+    a("    FontMetrics m = FontMetricsFor(size);")
     a("    while (*s) {")
-    a("        x += FontDrawChar(ren, x, y, *s++, col, size);")
+    a("        if (*s == '\\n') {")
+    a("            y += m.ch + 2;")
+    a("            curX = startX;")
+    a("        } else {")
+    a("            FontDrawChar(ren, curX, y, *s, col, size);")
+    a("            curX += m.cw;")
+    a("        }")
+    a("        s++;")
     a("    }")
-    a("    return x;")
+    a("    return curX;")
+    a("}")
+    a("")
+    a("/* Backwards compatibility */")
+    a("#define FONT_CHAR_W 7")
+    a("#define FONT_CHAR_H 14")
+    a("")
+    a("static inline void DrawChar(SDL_Renderer *ren, int x, int y, char c, SDL_Color col, int scale) {")
+    a("    FontSize sz = (scale >= 2) ? FONT_LG : FONT_SM;")
+    a("    FontDrawChar(ren, x, y, c, col, sz);")
+    a("}")
+    a("")
+    a("static inline void DrawText(SDL_Renderer *ren, int x, int y, const char *str, SDL_Color col, int scale) {")
+    a("    FontSize sz = (scale >= 2) ? FONT_LG : FONT_SM;")
+    a("    FontDrawText(ren, x, y, str, col, sz);")
     a("}")
     a("")
     a("#endif /* PLUTUS_FONT_H */")
@@ -343,7 +373,10 @@ def emit_header(results):
 
 header_text = emit_header(results)
 
-OUT_PATH = "/home/jan/CLionProjects/CPS/Plutus/inc/Font.h"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+OUT_PATH = os.path.join(PROJECT_ROOT, "inc", "Font.h")
+
 os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
 with open(OUT_PATH, "w") as f:
     f.write(header_text)

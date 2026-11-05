@@ -88,7 +88,7 @@ vcpkg install sdl2:x64-windows
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/janhruza/Plutus.git
+   git clone https://github.com/your-username/Plutus.git
    cd Plutus
    ```
 

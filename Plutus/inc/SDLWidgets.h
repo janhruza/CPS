@@ -1,5 +1,5 @@
 //
-// Created by jan on 10/31/26.
+// Created on 10/31/26.
 // SDLWidgets.h - Reusable SDL2 drawing primitives, event helpers, and chart widgets.
 //               All chart-drawing code should use these instead of duplicating SDL calls.
 //
