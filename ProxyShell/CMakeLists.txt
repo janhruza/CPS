@@ -3,6 +3,7 @@ project(ProxyShell C)
 
 set(CMAKE_C_STANDARD 23)
 
-add_executable(ProxyShell main.c)
+add_executable(ProxyShell main.c
+        inc/command.h)
 
 set_target_properties(ProxyShell PROPERTIES OUTPUT_NAME proxsh)
