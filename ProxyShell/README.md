@@ -125,4 +125,4 @@ ProxyShell/
 
 ## License
 
-ProxyShell is part of the CPS software suite and is licensed under the [MIT License](LICENSE.txt).
+ProxyShell is part of the CPS software suite and is licensed under the [MIT License](LICENSE.md).
