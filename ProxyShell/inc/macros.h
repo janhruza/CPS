@@ -11,8 +11,10 @@
 #define BANNER      "%s, v%s\n(c) 2026 %s\n\n", PRODUCT, VERSION, AUTHOR
 
 #define arr_size(array) (sizeof(array) / sizeof((array)[0]))
-#define com_extra void* pExtra1, void* pExtra2  // Arguments of a command function
-#define com_args nullptr, nullptr               // Default command function args value
-#define unused_param(param) (void)(param);
+#define com_extra void* pIn, void* pOut                         // Arguments of a command function
+#define com_args nullptr, nullptr                               // Default command function args value
+#define UNUSED(param) (void)(param);                            // Discards the param value
+#define com_set_in(value) *(int*)pIn = value
+#define com_set_out(value) *(int*)pOut = value
 
 #endif //PROXYSHELL_MACROS_H

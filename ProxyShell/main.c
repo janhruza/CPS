@@ -4,24 +4,13 @@
 #include <string.h>
 
 #include "inc/command.h"
+#include "inc/commands.h"
 #define prompt "proxsh: "
 
-static void ComClear(com_extra) {
-    unused_param(pExtra1)
-    unused_param(pExtra2)
-    printf("\033[H\033[2J");
-    fflush(stdout);
-}
-
-static void ComExit(com_extra) {
-    unused_param(pExtra1)
-    unused_param(pExtra2)
-    exit(0);
-}
-
 static Command knownCommands[] = {
-    {"clear", ComClear},
-    {"exit", ComExit}
+    {"clear", CmdClear},
+    {"exit", CmdExit},
+    {"cat", CmdCat}
 };
 
 int main(const int argc, const char** argv, const char **envp) {
@@ -53,7 +42,15 @@ int main(const int argc, const char** argv, const char **envp) {
             if (strcmp(ptr, knownCommands[i].name) == 0) {
                 // match found
                 ptr = strtok(nullptr, "\0"); // rest of the args
-                knownCommands[i].action(com_args);
+                int errorCode = 0;
+                knownCommands[i].action((void*)ptr, &errorCode);
+
+                // check the exit code, ignore success (0)
+                if (errorCode > 0) {
+                    const char* msg = GetErrorMsg(errorCode);
+                    printf("%s\n", msg);
+                }
+
                 handled = true;
                 break;
             }
