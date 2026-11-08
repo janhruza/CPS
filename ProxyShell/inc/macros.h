@@ -13,5 +13,6 @@
 #define arr_size(array) (sizeof(array) / sizeof((array)[0]))
 #define com_extra void* pExtra1, void* pExtra2  // Arguments of a command function
 #define com_args nullptr, nullptr               // Default command function args value
+#define unused_param(param) (void)(param);
 
 #endif //PROXYSHELL_MACROS_H

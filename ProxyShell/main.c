@@ -7,11 +7,15 @@
 #define prompt "proxsh: "
 
 static void ComClear(com_extra) {
+    unused_param(pExtra1)
+    unused_param(pExtra2)
     printf("\033[H\033[2J");
     fflush(stdout);
 }
 
 static void ComExit(com_extra) {
+    unused_param(pExtra1)
+    unused_param(pExtra2)
     exit(0);
 }
 
@@ -49,7 +53,7 @@ int main(const int argc, const char** argv, const char **envp) {
             if (strcmp(ptr, knownCommands[i].name) == 0) {
                 // match found
                 ptr = strtok(nullptr, "\0"); // rest of the args
-                knownCommands[i].action(nullptr, nullptr);
+                knownCommands[i].action(com_args);
                 handled = true;
                 break;
             }
