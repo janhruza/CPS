@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <dirent.h>
+#include <time.h>
 
 #include "../inc/types.h"
 
@@ -14,7 +15,9 @@ Command commands[MAX_COMMANDS] = {
     {"clear", CmdClear},
     {"exit", CmdExit},
     {"cat", CmdCat},
-    {"ls", CmdListDir}
+    {"ls", CmdListDir},
+    {"time", CmdTimeNow},
+    {"date", CmdDate},
 };
 
 void CmdCat(com_extra) {
@@ -108,4 +111,26 @@ void CmdListDir(com_extra) {
     if (closedir(dir) == -1) {
         com_set_out(E_CLOSE);
     }
+}
+
+void CmdTimeNow(com_extra) {
+    UNUSED(pIn);
+    com_set_out(S_OK);
+
+    time_t rawtime;
+    time(&rawtime);
+
+    const struct tm* now = localtime(&rawtime);
+    printf("%02d:%02d:%02d\n", now->tm_hour, now->tm_min, now->tm_sec);
+}
+
+void CmdDate(com_extra) {
+    UNUSED(pIn);
+    com_set_out(S_OK);
+
+    time_t rawtime;
+    time(&rawtime);
+
+    const struct tm* now = localtime(&rawtime);
+    printf("%02d/%02d/%02d\n", now->tm_mday, now->tm_mon + 1, now->tm_year + 1900);
 }
