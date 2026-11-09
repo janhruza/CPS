@@ -7,6 +7,8 @@
 
 #include "command.h"
 
+extern Command commands[MAX_COMMANDS];
+
 void CmdCat(com_extra);
 void CmdTouch(com_extra);
 void CmdClear(com_extra);

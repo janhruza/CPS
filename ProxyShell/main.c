@@ -5,13 +5,8 @@
 
 #include "inc/command.h"
 #include "inc/commands.h"
-#define prompt "proxsh: "
 
-static Command knownCommands[] = {
-    {"clear", CmdClear},
-    {"exit", CmdExit},
-    {"cat", CmdCat}
-};
+#define prompt "proxsh: "
 
 int main(const int argc, const char** argv, const char **envp) {
     if (argc != 1) {
@@ -38,12 +33,13 @@ int main(const int argc, const char** argv, const char **envp) {
         if (ptr == nullptr) continue;
 
         bool handled = false;
-        for (size_t i = 0; i < arr_size(knownCommands); i++) {
-            if (strcmp(ptr, knownCommands[i].name) == 0) {
+        for (size_t i = 0; i < MAX_COMMANDS; i++) {
+            if (commands[i].name == nullptr) break;
+            if (strcmp(ptr, commands[i].name) == 0) {
                 // match found
                 ptr = strtok(nullptr, "\0"); // rest of the args
                 int errorCode = 0;
-                knownCommands[i].action((void*)ptr, &errorCode);
+                commands[i].action((void*)ptr, &errorCode);
 
                 // check the exit code, ignore success (0)
                 if (errorCode > 0) {
@@ -67,3 +63,5 @@ int main(const int argc, const char** argv, const char **envp) {
     // program ends here
     return EXIT_SUCCESS;
 }
+
+#undef prompt

@@ -9,10 +9,16 @@
 
 #include "../inc/commands.h"
 
+Command commands[MAX_COMMANDS] = {
+    {"clear", CmdClear},
+    {"exit", CmdExit},
+    {"cat", CmdCat}
+};
+
 void CmdCat(com_extra) {
     // pIn: [In] path
     // pOut: [Out] status code
-    const char *path = (const char *)pIn;
+    const char *path = (char *)pIn;
     com_set_out(S_OK);
 
     if (path == nullptr) {
@@ -45,7 +51,7 @@ void CmdCat(com_extra) {
 }
 
 void CmdTouch(com_extra) {
-    char* path = (char*)pIn;
+    const char* path = (char*)pIn;
     com_set_out(S_OK);
 
     FILE *fp = fopen(path, "wb");
@@ -61,8 +67,6 @@ void CmdTouch(com_extra) {
 
     // successfully created
     printf("touch: File '%s' created successfully!\n", path);
-
-    return;
 }
 
 void CmdClear(com_extra) {
