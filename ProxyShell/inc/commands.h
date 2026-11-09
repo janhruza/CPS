@@ -13,5 +13,6 @@ void CmdCat(com_extra);
 void CmdTouch(com_extra);
 void CmdClear(com_extra);
 void CmdExit(com_extra);
+void CmdListDir(com_extra);
 
 #endif //PROXYSHELL_COMMANDS_H

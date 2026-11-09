@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <dirent.h>
 
 #include "../inc/types.h"
 
@@ -12,7 +13,8 @@
 Command commands[MAX_COMMANDS] = {
     {"clear", CmdClear},
     {"exit", CmdExit},
-    {"cat", CmdCat}
+    {"cat", CmdCat},
+    {"ls", CmdListDir}
 };
 
 void CmdCat(com_extra) {
@@ -71,7 +73,6 @@ void CmdTouch(com_extra) {
 
 void CmdClear(com_extra) {
     UNUSED(pIn);
-    UNUSED(pOut);
     printf("\033[H\033[2J");
     com_set_out(0);
     fflush(stdout);
@@ -79,7 +80,32 @@ void CmdClear(com_extra) {
 
 void CmdExit(com_extra) {
     UNUSED(pIn);
-    UNUSED(pOut);
     exit(0);
     com_set_out(0);
+}
+
+void CmdListDir(com_extra) {
+    const char *path = (char*)pIn;
+    if (path == nullptr) {
+        path = "."; // use current directory if none was specified
+    }
+
+    com_set_out(S_OK);
+
+    DIR* dir = opendir(path);
+    if (dir == nullptr) {
+        com_set_out(E_OPEN);
+        return;
+    }
+
+    struct dirent* entry;
+    int count = 1;
+    while ((entry = readdir(dir)) != nullptr) {
+        if (entry->d_name[0] == '.') continue;
+        printf("%-3d%s\n", count++, entry->d_name);
+    }
+
+    if (closedir(dir) == -1) {
+        com_set_out(E_CLOSE);
+    }
 }
