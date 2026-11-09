@@ -20,6 +20,21 @@ Command commands[MAX_COMMANDS] = {
     {"date", CmdDate},
 };
 
+/* --- HELPERS --- */
+
+static bool GetLocalTime(struct tm* buf) {
+    if (buf == nullptr) {
+        return false;
+    }
+
+    time_t raw_time = 0;
+    time(&raw_time);
+    buf = localtime_r(&raw_time, buf);
+    return true;
+}
+
+/* --------------- */
+
 void CmdCat(com_extra) {
     // pIn: [In] path
     // pOut: [Out] status code
@@ -117,20 +132,16 @@ void CmdTimeNow(com_extra) {
     UNUSED(pIn);
     com_set_out(S_OK);
 
-    time_t rawtime;
-    time(&rawtime);
-
-    const struct tm* now = localtime(&rawtime);
-    printf("%02d:%02d:%02d\n", now->tm_hour, now->tm_min, now->tm_sec);
+    struct tm now = {0};
+    GetLocalTime(&now);
+    printf("%02d:%02d:%02d\n", now.tm_hour, now.tm_min, now.tm_sec);
 }
 
 void CmdDate(com_extra) {
     UNUSED(pIn);
     com_set_out(S_OK);
 
-    time_t rawtime;
-    time(&rawtime);
-
-    const struct tm* now = localtime(&rawtime);
-    printf("%02d/%02d/%02d\n", now->tm_mday, now->tm_mon + 1, now->tm_year + 1900);
+    struct tm now = {0};
+    GetLocalTime(&now);
+    printf("%02d/%02d/%02d\n", now.tm_mday, now.tm_mon + 1, now.tm_year + 1900);
 }
