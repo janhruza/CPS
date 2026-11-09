@@ -82,18 +82,17 @@ void CmdTouch(com_extra) {
 
     if (fclose(fp) != 0) {
         com_set_out(E_CLOSE);
-        return;
     }
-
-    // successfully created
-    printf("touch: File '%s' created successfully!\n", path);
 }
 
 void CmdClear(com_extra) {
     UNUSED(pIn);
-    printf("\033[H\033[2J");
-    com_set_out(0);
+
+    // clear the visible screen + the history (if supported)
+    printf("\033[H\033[2J\033[3J");
     fflush(stdout);
+
+    com_set_out(S_OK);
 }
 
 void CmdExit(com_extra) {
