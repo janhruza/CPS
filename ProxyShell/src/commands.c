@@ -12,12 +12,12 @@
 #include "../inc/commands.h"
 
 Command commands[MAX_COMMANDS] = {
-    {"clear", CmdClear},
-    {"exit", CmdExit},
-    {"cat", CmdCat},
-    {"ls", CmdListDir},
-    {"time", CmdTimeNow},
-    {"date", CmdDate},
+    {.name = "clear", .action = CmdClear},
+    {.name = "exit", .action = CmdExit},
+    {.name = "cat", .action = CmdCat},
+    {.name = "ls", .action = CmdListDir},
+    {.name = "time", .action = CmdTimeNow},
+    {.name = "date", .action = CmdDate},
 };
 
 /* --- HELPERS --- */

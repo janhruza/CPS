@@ -8,7 +8,7 @@
 
 #define prompt "proxsh: "
 
-int main(const int argc, const char** argv, const char **envp) {
+int main(const int argc, const char** argv) {
     if (argc != 1) {
         fprintf(stderr, "%s: Arguments are disabled.\n", argv[0]);
         return EXIT_FAILURE;
@@ -21,8 +21,8 @@ int main(const int argc, const char** argv, const char **envp) {
         printf("%s", prompt);
 
         // read the command
-        char input[256], input_copy[256];
-        fgets(input, 256, stdin);
+        char input[MAX_INPUT_SIZE], input_copy[MAX_INPUT_SIZE];
+        fgets(input, MAX_INPUT_SIZE, stdin);
         input[strlen(input) - 1] = '\0';
 
         // duplicate the string

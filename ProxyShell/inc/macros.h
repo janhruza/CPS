@@ -5,10 +5,11 @@
 #ifndef PROXYSHELL_MACROS_H
 #define PROXYSHELL_MACROS_H
 
-#define PRODUCT     "ProxyShell"
-#define AUTHOR      "@jendahruza"
-#define VERSION     "0.1.0"
-#define BANNER      "%s, v%s\n(c) 2026 %s\n\n", PRODUCT, VERSION, AUTHOR
+#define PRODUCT         "ProxyShell"
+#define AUTHOR          "@jendahruza"
+#define VERSION         "0.1.0"
+#define BANNER          "%s, v%s\n(c) 2026 %s\n\n", PRODUCT, VERSION, AUTHOR
+#define MAX_INPUT_SIZE  256
 
 #define arr_size(array) (sizeof(array) / sizeof((array)[0]))
 #define com_extra void* pIn, void* pOut                         // Arguments of a command function
