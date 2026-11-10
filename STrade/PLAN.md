@@ -17,9 +17,10 @@ buy and sell those virtual assets
    3. Start the next day (cycle repeats)
 
 ## Technical implementation
+Technical implementation will be updated alongside the project itself.
 
 ## TODO
-Here is a list of features and their implementation status: [ ] unimplemented, [x] implemented.
+Here is a list of features and their implementation status:
 
 - Structs and data objects
   - [ ] Session information
