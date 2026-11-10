@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <time.h>
+#include <string.h>
 
 #include "../inc/types.h"
 
@@ -18,6 +19,7 @@ Command commands[MAX_COMMANDS] = {
     {.name = "ls", .action = CmdListDir},
     {.name = "time", .action = CmdTimeNow},
     {.name = "date", .action = CmdDate},
+    {.name = "open", .action = CmdOpen},
 };
 
 /* --- HELPERS --- */
@@ -143,4 +145,19 @@ void CmdDate(com_extra) {
     struct tm now = {0};
     GetLocalTime(&now);
     printf("%02d/%02d/%02d\n", now.tm_mday, now.tm_mon + 1, now.tm_year + 1900);
+}
+
+void CmdOpen(com_extra)
+{
+    int len = strlen((char*)pIn);
+    com_set_out(S_OK);
+
+    // xdg-open [com]
+    size_t size = len + 10;
+    char* mem = malloc(size * sizeof(char));
+    snprintf(mem, size, "%s %s", "xdg-open", (char*)pIn);
+    system(mem);
+    free(mem);
+
+    return;
 }

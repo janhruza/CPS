@@ -16,5 +16,6 @@ void CmdExit(com_extra);
 void CmdListDir(com_extra);
 void CmdTimeNow(com_extra);
 void CmdDate(com_extra);
+void CmdOpen(com_extra);
 
 #endif //PROXYSHELL_COMMANDS_H
