@@ -16,6 +16,7 @@ Command commands[MAX_COMMANDS] = {
     {.name = "clear", .action = CmdClear},
     {.name = "exit", .action = CmdExit},
     {.name = "cat", .action = CmdCat},
+    {.name = "touch", .action = CmdTouch},
     {.name = "ls", .action = CmdListDir},
     {.name = "time", .action = CmdTimeNow},
     {.name = "date", .action = CmdDate},

@@ -20,9 +20,13 @@ ProxyShell currently defines and handles the following commands:
 | Command        | Status in Shell         | Behavior                                                                                          |
 |:---------------|:------------------------|:--------------------------------------------------------------------------------------------------|
 | `cat <file>`   | **Active**              | Displays file contents prefixed with formatted line numbers (`%-4d `).                            |
-| `clear`        | **Active**              | Clears the terminal screen via ANSI escape sequences (`\033[H\033[2J`).                           |
+| `clear`        | **Active**              | Clears the visible screen and scrollback history via ANSI sequences (`\033[H\033[2J\033[3J`).    |
+| `date`         | **Active**              | Displays the current local date in `DD/MM/YYYY` format.                                           |
 | `exit`         | **Active**              | Terminates the interactive ProxyShell session immediately.                                        |
-| `touch <file>` | *Implemented (dormant)* | Helper implemented to create binary files with confirmation status; can be bound to the registry. |
+| `ls [path]`    | **Active**              | Enumerates directory contents with item indices (`%-3d`), filtering hidden files (`.`). Defaults to current directory (`.`). |
+| `open <target>`| **Active**              | Opens a file, directory, or URL using the system's default handler (`xdg-open`).                   |
+| `time`         | **Active**              | Displays the current local time in `HH:MM:SS` format.                                             |
+| `touch <file>` | **Active**              | Binary file creation helper; implemented and ready to be bound in the registry.                   |
 | *(all other)*  | **Pass-through**        | Forwarded directly to the underlying system shell.                                                |
 
 ---
@@ -43,13 +47,14 @@ ProxyShell currently defines and handles the following commands:
                             v                 v
                 +-----------------------+   +-----------------------+
                 | Internal C Handler    |   | System Shell          |
-                | (cat, clear, exit)    |   | (system(input))       |
+                | (cat, clear, date,    |   | (system(input))       |
+                |  exit, ls, open, time)|   |                       |
                 +-----------------------+   +-----------------------+
 ```
 
 1. Starts an interactive prompt (`proxsh: `) displaying product and version information.
 2. Reads command lines via `fgets` and tokenizes the command name.
-3. Checks against `knownCommands[]`. If found, executes the respective handler with structured error reporting.
+3. Checks against `commands[]`. If found, executes the respective handler with structured error reporting.
 4. If unrecognized, delegates execution transparently to the environment shell.
 
 ---
@@ -92,8 +97,14 @@ ProxyShell, v0.1.0
 proxsh: cat sample.txt
 1    Hello from ProxyShell!
 2    Line numbers are added automatically.
-proxsh: ls -la
-... (output from host shell) ...
+proxsh: ls
+1  sample.txt
+2  CMakeLists.txt
+proxsh: time
+14:15:30
+proxsh: date
+10/11/2026
+proxsh: open sample.txt
 proxsh: clear
 ... (terminal cleared) ...
 proxsh: exit
