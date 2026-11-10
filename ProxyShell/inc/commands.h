@@ -9,13 +9,13 @@
 
 extern Command commands[MAX_COMMANDS];
 
-void CmdCat(com_extra);
-void CmdTouch(com_extra);
-void CmdClear(com_extra);
-void CmdExit(com_extra);
-void CmdListDir(com_extra);
-void CmdTimeNow(com_extra);
-void CmdDate(com_extra);
-void CmdOpen(com_extra);
+void CmdCat(com_args);
+void CmdTouch(com_args);
+void CmdClear(com_args);
+void CmdExit(com_args);
+void CmdListDir(com_args);
+void CmdTimeNow(com_args);
+void CmdDate(com_args);
+void CmdOpen(com_args);
 
 #endif //PROXYSHELL_COMMANDS_H

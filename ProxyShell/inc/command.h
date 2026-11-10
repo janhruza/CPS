@@ -13,7 +13,7 @@
  */
 typedef struct sCommand {
     char* name;                     // Name (alias) of the command.
-    void (*action)(com_extra);  // Pointer to the command function.
+    void (*action)(com_args);  // Pointer to the command function.
 } Command;
 
 /**

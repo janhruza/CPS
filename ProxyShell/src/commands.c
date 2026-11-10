@@ -37,7 +37,7 @@ static bool GetLocalTime(struct tm* buf) {
 
 /* --------------- */
 
-void CmdCat(com_extra) {
+void CmdCat(com_args) {
     // pIn: [In] path
     // pOut: [Out] status code
     const char *path = (char *)pIn;
@@ -72,7 +72,7 @@ void CmdCat(com_extra) {
     }
 }
 
-void CmdTouch(com_extra) {
+void CmdTouch(com_args) {
     const char* path = (char*)pIn;
     com_set_out(S_OK);
 
@@ -87,7 +87,7 @@ void CmdTouch(com_extra) {
     }
 }
 
-void CmdClear(com_extra) {
+void CmdClear(com_args) {
     UNUSED(pIn);
 
     // clear the visible screen + the history (if supported)
@@ -97,13 +97,13 @@ void CmdClear(com_extra) {
     com_set_out(S_OK);
 }
 
-void CmdExit(com_extra) {
+void CmdExit(com_args) {
     UNUSED(pIn);
     exit(0);
     com_set_out(0);
 }
 
-void CmdListDir(com_extra) {
+void CmdListDir(com_args) {
     const char *path = (char*)pIn;
     if (path == nullptr) {
         path = "."; // use current directory if none was specified
@@ -129,7 +129,7 @@ void CmdListDir(com_extra) {
     }
 }
 
-void CmdTimeNow(com_extra) {
+void CmdTimeNow(com_args) {
     UNUSED(pIn);
     com_set_out(S_OK);
 
@@ -138,7 +138,7 @@ void CmdTimeNow(com_extra) {
     printf("%02d:%02d:%02d\n", now.tm_hour, now.tm_min, now.tm_sec);
 }
 
-void CmdDate(com_extra) {
+void CmdDate(com_args) {
     UNUSED(pIn);
     com_set_out(S_OK);
 
@@ -147,13 +147,13 @@ void CmdDate(com_extra) {
     printf("%02d/%02d/%02d\n", now.tm_mday, now.tm_mon + 1, now.tm_year + 1900);
 }
 
-void CmdOpen(com_extra)
+void CmdOpen(com_args)
 {
-    int len = strlen((char*)pIn);
+    const size_t len = strlen((char*)pIn);
     com_set_out(S_OK);
 
-    // xdg-open [com]
-    size_t size = len + 10;
+    // xdg-open [command]
+    const size_t size = len + 10;
     char* mem = malloc(size * sizeof(char));
     snprintf(mem, size, "%s %s", "xdg-open", (char*)pIn);
     system(mem);
