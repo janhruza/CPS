@@ -10,6 +10,8 @@ add_executable(STrade main.c
         inc/Game.h
         inc/Asset.h
         inc/Holding.h
-        inc/Game.h)
+        inc/Game.h
+        src/Asset.c
+)
 
 set_target_properties(STrade PROPERTIES OUTPUT_NAME strade)

@@ -14,7 +14,7 @@
 typedef struct sGame {
     char* playerName;       // Representing the player's name
     Holding *holding;       // Representing the assets owned by a player.
-    Asset *assets;          // Representing an array of all tradable assets (basically the market itself).
+    Asset **assets;         // Representing an array of all tradable assets (basically the market itself).
     unsigned int seed;      // Representing the initial seed used for modeling of the entire run.
     unsigned int day;       // Representing the current iteration of the game loop where each iteration represents a single day on the stock market.
 } Game;
