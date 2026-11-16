@@ -23,7 +23,7 @@ typedef enum tagHCResult {
     HCERR,      // A generic error, command not found, etc.
 } HCRESULT;
 
-PowerPlant *g_plant = NULL;
+PowerPlant *g_plant = nullptr;
 
 /**
  * Handles a user entered input.

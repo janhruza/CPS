@@ -15,7 +15,11 @@ RESULT CmdQuit(void) {
 }
 
 RESULT CmdHelp(void) {
-    fprintf(stderr, "Help not implemented.\n");
+    puts("Available commands:");
+    puts("  clear   - Clears the terminal screen.");
+    puts("  exit    - Exits the application.");
+    puts("  help    - Show help.");
+    puts("  version - Shows the application version number.");
     return SUCCESS;
 }
 
