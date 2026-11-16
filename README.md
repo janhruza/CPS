@@ -64,4 +64,4 @@ For project-specific compilation instructions, command-line arguments, and prere
 
 ## License
 
-This repository and its subprojects are licensed under the [MIT License](LICENSE) (or individual subproject licenses where specified).
+This repository and its subprojects are licensed under the [MIT License](LICENSE.md) (or individual subproject licenses where specified).
