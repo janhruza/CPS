@@ -49,7 +49,7 @@ static HCRESULT HandleCommand(const char* command) {
 
     else if (strcmp(command, "state") == 0) {
         // lists states for all reactors
-        if (g_plant == NULL) return HCEMPTY;
+        if (g_plant == nullptr) return HCEMPTY;
 
         for (int x = 0; x < g_plant->nReactors; x++) {
             Reactor_PrintState(&g_plant->pReactors[x]);

@@ -35,7 +35,7 @@ bool Reactor_Update(const PReactor pReactor) {
 }
 
 bool Reactor_Create(const PReactor pReactor, const unsigned int coreId) {
-    if (pReactor == NULL) {
+    if (pReactor == nullptr) {
         return false;
     }
 
